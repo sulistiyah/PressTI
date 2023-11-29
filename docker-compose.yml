@@ -40,7 +40,6 @@ services:
     build:
       context: ./server-ui
       dockerfile: Dockerfile
-      target: development  
       args:
         - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
     ports:
