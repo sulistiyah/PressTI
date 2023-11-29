@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   mysqldb:
+    container_name: mysqldb-container
     image: mysql:5.7
     restart: unless-stopped
     env_file: ./.env
@@ -16,6 +17,7 @@ services:
       - backend
 
   server-api:
+    container_name: server-api-container
     depends_on:
       - mysqldb
     build: ./server-api
@@ -35,6 +37,7 @@ services:
       - frontend
 
   server-ui:
+    container_name: server-ui-container
     depends_on:
       - server-api
     build:
