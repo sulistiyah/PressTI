@@ -12,16 +12,7 @@ const bcrypt = require("bcryptjs")
 
 //Create akun admin
 exports.createAdmin = (req, res) => {
-  // Validate request
-  // if (!req.body.admin) {
-  //   res.status(400).send({
-  //     statusCode : 400,
-  //     message: "Content can not be empty!"
-  //   });
-  //   return;
-  // }
-
-  //membuat data program studi
+  //membuat data admin
   const admin = {
     nama: req.body.nama,
     email: req.body.email,
@@ -30,12 +21,12 @@ exports.createAdmin = (req, res) => {
 
   };
 
-  //Menyimpan data Program studi kedalam database
+  //Menyimpan data admin kedalam database
   Admin.create(admin)
     .then(data => {
       res.status(200).send({
         statusCode : 200,
-        message : "Success Create Data Program Study",
+        message : "Success Create Admin",
         data : data
       });
     })
@@ -43,13 +34,13 @@ exports.createAdmin = (req, res) => {
       console.error("Error creating admin:", err);
       res.status(404).send({
         statusCode : 404,
-        message: "Failed Get Data Program Study"
+        message: "Failed Get Data Admin"
       });
     });
 };
 
 
-//Proses Login Mahasiswa
+//Proses Login Admin
 exports.loginAdmin = (req, res) => {
   Admin.findOne({
       where : {
