@@ -37,10 +37,10 @@ module.exports = app => {
     router.delete("/user_mahasiswa/:id", admin.deleteUserMahasiswa)
 
     //USER DOSEN
-    router.post("/user_mahasiswa", admin.createUserDosen)
-    router.get("/user_mahasiswa", admin.findAllUserDosen)
-    router.get("/user_mahasiswa/:id", admin.findOneUserDosen)
-    router.put("/user_mahasiswa/:id", admin.updateUserDosen)
-    router.delete("/user_mahasiswa/:id", admin.deleteUserDosen)
+    router.post("/user_dosen", admin.createUserDosen)
+    router.get("/user_dosen", admin.findAllUserDosen)
+    router.get("/user_dosen/:id", admin.findOneUserDosen)
+    router.put("/user_dosen/:id", admin.updateUserDosen)
+    router.delete("/user_dosen/:id", admin.deleteUserDosen)
     
 }
