@@ -148,7 +148,6 @@ exports.login = (req, res) => {
         );
 
         UserMahasiswa.create({
-            id : data.id,
             token : token
         })
 
