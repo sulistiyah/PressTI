@@ -316,14 +316,14 @@ exports.createKelas = (req, res) => {
         } else {
           res.status(404).send({
             statusCode : 404,
-            message: `Cannot find Class with id=${programStudiId}.`
+            message: `Cannot find Class with id=${id}.`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
           statusCode : 500,
-          message: "Error retrieving Class with id=" + programStudiId
+          message: "Error retrieving Class with id=" + id
         });
       });
   };
