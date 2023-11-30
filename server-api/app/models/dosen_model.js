@@ -16,10 +16,10 @@ module.exports = (sequelizeDB, Sequelize) => {
             type: Sequelize.STRING(100)
         },
         password: {
-            type: Sequelize.STRING(30)
+            type: Sequelize.STRING(100)
         },
         rePassword: {
-            type: Sequelize.STRING(30)
+            type: Sequelize.STRING(100)
         },
         token: {
             type: Sequelize.STRING(100)
