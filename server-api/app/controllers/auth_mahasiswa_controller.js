@@ -152,6 +152,9 @@ exports.login = (req, res) => {
             token : token
         })
 
+        data.token = token
+        data.save()
+
         res.status(200).send({
             statusCode : 200,
             message: "Login Successful",
