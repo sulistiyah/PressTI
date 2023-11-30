@@ -86,13 +86,13 @@ exports.loginAdmin = (req, res) => {
 
 exports.createProgramStudi = (req, res) => {
   // Validate request
-  if (!req.body.program_studi) {
-    res.status(400).send({
-      statusCode : 400,
-      message: "Content can not be empty!"
-    });
-    return;
-  }
+  // if (!req.body.program_studi) {
+  //   res.status(400).send({
+  //     statusCode : 400,
+  //     message: "Content can not be empty!"
+  //   });
+  //   return;
+  // }
 
   //membuat data program studi
   const program_studi = {
