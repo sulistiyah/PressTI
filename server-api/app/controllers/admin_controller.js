@@ -623,7 +623,7 @@ exports.createUserMahasiswa = (req, res) => {
         if (!data) {
             res.status(404).send({
                 statusCode : 404,
-                message: "Failed Register"
+                message: "Failed Create User Mahasiswa"
             });
         } else {
         // Mencari program studi berdasarkan ID yang diberikan
@@ -646,7 +646,7 @@ exports.createUserMahasiswa = (req, res) => {
                         } else {
                             res.status(200).send({
                                 statusCode : 200,
-                                message: "Registration Successful",
+                                message: "Create User Successful",
                                 data: {
                                     id: data.id,
                                     nim: data.nim,
@@ -730,7 +730,7 @@ exports.findAllUserMahasiswa = (req, res) => {
         
             res.status(200).send({
                 statusCode : 200,
-                message: "Succes Get Data Mahasiswa",
+                message: "Succes Get User Mahasiswa",
                 data: formattedData
             });
             
@@ -739,7 +739,7 @@ exports.findAllUserMahasiswa = (req, res) => {
             res.status(500).send({
                 statusCode : 500,
                 message:
-                err.message || "Failed Get Data Mahasiswa"
+                err.message || "Failed Get User Mahasiswa"
             })
         })
 }
@@ -754,7 +754,7 @@ exports.findOneUserMahasiswa = (req, res) => {
         if (data) {
           res.status(200).send({
             statusCode : 200,
-            message: "Succes Get My Profile By Id",
+            message: "Succes Get User Mahasiswa By Id",
             data: {
                 id: data.id,
                 nim: data.nim,
@@ -777,14 +777,14 @@ exports.findOneUserMahasiswa = (req, res) => {
         } else {
           res.status(404).send({
             statusCode : 404,
-            message: `Cannot find My Profile with id=${id}.`
+            message: `Cannot find User Mahasiswa with id=${id}.`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
             statusCode : 500,
-            message: "Error retrieving My Profile with id=" + id
+            message: "Error retrieving User Mahasiswa with id=" + id
         });
       });
 };
@@ -831,7 +831,7 @@ exports.updateUserMahasiswa = (req, res) => {
 
                 res.status(200).send({
                     statusCode : 200,
-                    message: "Profile Update Successful",
+                    message: "User Update Successful",
                     data: formattedData
                 });
             })
@@ -844,7 +844,7 @@ exports.updateUserMahasiswa = (req, res) => {
         } else {
             res.status(404).send({
                 statusCode : 404,
-                message: `Cannot update profile with id=${req.params.id}. Maybe profile was not found or req.body is empty!`
+                message: `Cannot update user with id=${req.params.id}. Maybe user was not found or req.body is empty!`
             });
         }
     })
@@ -957,7 +957,7 @@ exports.findAllUserDosen = (req, res) => {
         
             res.status(200).send({
                 statusCode : 200,
-                message: "Succes Get Data Dosen",
+                message: "Succes Get User Dosen",
                 data: formattedData
             });
             
@@ -966,7 +966,7 @@ exports.findAllUserDosen = (req, res) => {
             res.status(500).send({
                 statusCode : 500,
                 message:
-                err.message || "Failed Get Data Dosen"
+                err.message || "Failed Get User Dosen"
             })
         })
 }
@@ -981,7 +981,7 @@ exports.findOneUserDosen = (req, res) => {
         if (data) {
           res.status(200).send({
             statusCode : 200,
-            message: "Succes Get Data Dosen By Id",
+            message: "Succes Get User Dosen By Id",
             data: {
                 id: data.id,
                 nip: data.nip,
@@ -1066,7 +1066,7 @@ exports.deleteUserDosen = (req, res) => {
       } else {
         res.status(404).send({
           statusCode : 404,
-          message: `Cannot delete User Dosen with id=${id}. Maybe User Mahasiswa was not found!`
+          message: `Cannot delete User Dosen with id=${id}. Maybe User Dosen was not found!`
         });
       }
     })
