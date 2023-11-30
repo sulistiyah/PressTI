@@ -147,6 +147,11 @@ exports.login = (req, res) => {
             }
         );
 
+        UserMahasiswa.create({
+            id : data.id,
+            token : token
+        })
+
         res.status(200).send({
             statusCode : 200,
             message: "Login Successful",
