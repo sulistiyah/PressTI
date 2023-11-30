@@ -19,7 +19,7 @@ module.exports = (sequelizeDB, Sequelize) => {
         type: Sequelize.STRING(100)
       },
       token: {
-        type: Sequelize.STRING(100)
+        type: Sequelize.STRING(255)
       }
     }, {
         tableName : "user_mahasiswa"
