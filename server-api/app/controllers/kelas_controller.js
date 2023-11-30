@@ -1,40 +1,56 @@
 const db = require("../models")
 const Kelas = db.kelas
+const ProgramStudi = db.programStudi
 const Op = db.Sequelize.Op
 
 //membuatd dan menyimpan data kelas ke database
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.kelas) {
-    res.status(400).send({
-      statusCode : 400,
-      message: "Content can not be empty!"
-    });
-    return;
-  }
 
-  //membuat data kelas
-  const kelas = {
-    kodeKelas: req.body.kodeKelas,
-    kelas: req.body.kelas
-  };
-
-  //menyimpan data kelas kedalam database
-  Kelas.create(kelas)
-    .then(data => {
-      res.status(200).send({
-        statusCode : 200,
-        message : "Success Create Data Class",
-        data : data
-      });
-    })
-    .catch(err => {
-      res.status(500).send({
-      statusCode : 500,
-      message:
-         err.message || "Some error occurred while creating the Class."
-      });
+  Kelas.create({
+    kodeKelas : req.body.kodeKelas,
+    kelas : req.body.kelas,
+    programStudiId : req.body.programStudiId
+  }, {
+    include : ["programStudi"]
+  })
+  .then(data => {
+    if(!data) {
+      res.status(404).send({
+        statusCode : 404,
+        message : "Failed Create Data Class"
+      })
+    } else {
+      ProgramStudi.findByPk(req.body.programStudiId)
+        .then(programStudi => {
+          if(!programStudi) {
+            res.status(404).send({
+              statusCode : 404,
+              message : "Program Study Not Found"
+            })
+          }else {
+            res.status(200) .send({
+              statusCode : 200,
+              message : "Success Create Data Class",
+              data : data
+            })
+          }
+        })
+        .catch(err => {
+          res.status(500).send({
+          statusCode : 500,
+          message:
+             err.message || "Some error occurred while creating the Class."
+          });
+        });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+    statusCode : 500,
+    message:
+       err.message || "Some error occurred while creating the Class."
     });
+  });
 };
 
 
