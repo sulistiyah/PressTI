@@ -21,5 +21,26 @@ module.exports = app => {
     router.get("/kelas/:id", admin.findOneKelas)
     router.put("/kelas/:id", admin.updateKelas)
     router.delete("/kelas/:id", admin.deleteKelas)
+
+    //MATA KULIAH
+    router.post("/mata_kuliah", admin.createMataKuliah)
+    router.get("/mata_kuliah", admin.findAllMataKuliah)
+    router.get("/mata_kuliah/:id", admin.findOneMataKuliah)
+    router.put("/mata_kuliah/:id", admin.updateMataKuliah)
+    router.delete("/mata_kuliah/:id", admin.deleteMataKuliah)
+
+    //USER MAHASISWA
+    router.post("/user_mahasiswa", admin.createUserMahasiswa)
+    router.get("/user_mahasiswa", admin.findAllUserMahasiswa)
+    router.get("/user_mahasiswa/:id", admin.findOneUserMahasiswa)
+    router.put("/user_mahasiswa/:id", admin.updateUserMahasiswa)
+    router.delete("/user_mahasiswa/:id", admin.deleteUserMahasiswa)
+
+    //USER DOSEN
+    router.post("/user_mahasiswa", admin.createUserDosen)
+    router.get("/user_mahasiswa", admin.findAllUserDosen)
+    router.get("/user_mahasiswa/:id", admin.findOneUserDosen)
+    router.put("/user_mahasiswa/:id", admin.updateUserDosen)
+    router.delete("/user_mahasiswa/:id", admin.deleteUserDosen)
     
 }

@@ -1,38 +1,88 @@
 const db = require("../models")
 const MataKuliah = db.matkul
+const ProgramStudi = db.programStudi
+const Kelas = db.kelas
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.mata_kuliah) {
-    res.status(400).send({
-      statusCode : 400,
-      message: "Content can not be empty!"
-    });
-    return;
-  }
-
   //membuat data Mata Kuliah
   const mata_kuliah = {
     kodeMatkul: req.body.kodeMatkul,
-    mataKuliah: req.body.mataKuliah
+    mataKuliah: req.body.mataKuliah,
+    programStudiId : req.body.programStudiId,
+    kelasId : req.body.kelasId
   };
 
   //Menyimpan data Mata Kuliah kedalam database
-  MataKuliah.create(mata_kuliah)
-    .then(data => {
-      res.status(200).send({
-        statusCode : 200,
-        message : "Success Create Data Mata Kuliah",
-        data : data
+  MataKuliah.create(mata_kuliah, { include : ["programStudi, kelas"] } )
+  .then(data => {
+    if (!data) {
+        res.status(404).send({
+            statusCode : 404,
+            message: "Failed Create Data Mata Kuliah"
+        });
+    } else {
+    // Mencari program studi berdasarkan ID yang diberikan
+        ProgramStudi.findByPk(req.body.programStudiId)
+            .then(programStudi => {
+            if (!programStudi) {
+                res.status(404).send({
+                    statusCode : 404,
+                    message: "Program Study not found"
+                });
+            } else {
+                // Mencari kelas berdasarkan ID yang diberikan
+                Kelas.findByPk(req.body.kelasId)
+                .then(kelas => {
+                    if (!kelas) {
+                        res.status(404).send({
+                            statusCode : 404,
+                            message: "Kelas not found"
+                        });
+                    } else {
+                        res.status(200).send({
+                            statusCode : 200,
+                            message: "Create Mata Kuliah Successful",
+                            data: {
+                                id: data.id,
+                                kodeMatkul: data.kodeMatkul,
+                                mataKuliah: data.mataKuliah,
+                                programStudi: {
+                                    id: programStudi.id,
+                                    kodeProdi: programStudi.kodeProdi,
+                                    programStudi: programStudi.programStudi,
+                                },
+                                kelas: {
+                                    id: kelas.id,
+                                    kodeKelas: kelas.kodeKelas,
+                                    kelas: kelas.kelas,
+                                }                                
+                            }
+                        });
+                    }
+                })
+                .catch(err => {
+                    res.status(500).send({
+                    statusCode : 500,
+                    message: err.message || "Some error occurred while retrieving Kelas."
+                    });
+                });
+            }
+            })
+            .catch(err => {
+                res.status(500).send({
+                    statusCode : 500,
+                    message: err.message || "Some error occurred while retrieving Program Studi."
+                });
+            });
+    }
+  })
+  .catch(err => {
+      res.status(500).send({
+      statusCode : 500,
+      message: err.message || "Some error occurred while creating the User."
       });
-    })
-    .catch(err => {
-      res.status(404).send({
-        statusCode : 404,
-        message: "Failed Get Data Mata Kuliah"
-      });
-    });
+  });
 };
 
 //Function GET => mendapatkan semua data dan mendapatkan data dengan query tertentu 
@@ -154,3 +204,77 @@ exports.delete = (req, res) => {
     });
 };
 
+
+exports.create = (req, res) => {
+  //membuat data program studi
+  const program_studi = {
+    kodeProdi: req.body.kodeProdi,
+    programStudi: req.body.programStudi
+  };
+
+  //Menyimpan data Program studi kedalam database
+  ProgramStudi.create(program_studi)
+    .then(data => {
+      res.status(200).send({
+        statusCode : 200,
+        message : "Success Create Data Program Study",
+        data : data
+      });
+    })
+    .catch(err => {
+      res.status(404).send({
+        statusCode : 404,
+        message: "Failed Get Data Program Study"
+      });
+    });
+};
+
+//membuatd dan menyimpan data kelas ke database
+exports.create = (req, res) => {
+
+  Kelas.create({
+    kodeKelas : req.body.kodeKelas,
+    kelas : req.body.kelas,
+    programStudiId : req.body.programStudiId
+  }, {
+    include : ["programStudi"]
+  })
+  .then(data => {
+    if(!data) {
+      res.status(404).send({
+        statusCode : 404,
+        message : "Failed Create Data Class"
+      })
+    } else {
+      ProgramStudi.findByPk(req.body.programStudiId)
+        .then(programStudi => {
+          if(!programStudi) {
+            res.status(404).send({
+              statusCode : 404,
+              message : "Program Study Not Found"
+            })
+          }else {
+            res.status(200) .send({
+              statusCode : 200,
+              message : "Success Create Data Class",
+              data : data
+            })
+          }
+        })
+        .catch(err => {
+          res.status(500).send({
+          statusCode : 500,
+          message:
+             err.message || "Some error occurred while creating the Class."
+          });
+        });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+    statusCode : 500,
+    message:
+       err.message || "Some error occurred while creating the Class."
+    });
+  });
+};

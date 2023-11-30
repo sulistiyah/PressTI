@@ -4,15 +4,6 @@ const Kelas = db.kelas
 const Op = db.Sequelize.Op
 
 exports.create = (req, res) => {
-  // Validate request
-  // if (!req.body.program_studi) {
-  //   res.status(400).send({
-  //     statusCode : 400,
-  //     message: "Content can not be empty!"
-  //   });
-  //   return;
-  // }
-
   //membuat data program studi
   const program_studi = {
     kodeProdi: req.body.kodeProdi,
