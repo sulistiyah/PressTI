@@ -238,7 +238,7 @@ exports.deleteProgramStudi = (req, res) => {
 
 //================================================================KELAS==================================================//
 //membuatd dan menyimpan data kelas ke database
-exports.create = (req, res) => {
+exports.createKelas = (req, res) => {
 
   Kelas.create({
     kodeKelas : req.body.kodeKelas,
