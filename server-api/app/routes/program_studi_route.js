@@ -3,7 +3,7 @@ module.exports = app => {
     const router = require("express").Router()
 
     // Create a new Program Studi
-    router.post("/program_studi", programStudi.create);
+    router.post("/program_studi", programStudi.createProdi);
 
     //GET Data Program Studi
     router.get("/program_studi", programStudi.findAll)

@@ -3,7 +3,7 @@ const ProgramStudi = db.programStudi
 const Kelas = db.kelas
 const Op = db.Sequelize.Op
 
-exports.create = (req, res) => {
+exports.createProdi = (req, res) => {
   //membuat data program studi
   const program_studi = {
     kodeProdi: req.body.kodeProdi,

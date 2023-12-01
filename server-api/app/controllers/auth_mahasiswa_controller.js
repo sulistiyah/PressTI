@@ -229,11 +229,10 @@ exports.findAllMyProfile = (req, res) => {
             });
             
         })
-        .catch(err => {
+        .catch( err => {
             res.status(500).send({
                 statusCode : 500,
-                message:
-                err.message || "Failed Get Data Mahasiswa"
+                message: "Failed Get Data Mahasiswa"
             })
         })
 }
