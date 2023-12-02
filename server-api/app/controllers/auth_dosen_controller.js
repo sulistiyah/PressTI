@@ -188,7 +188,7 @@ exports.findOneMyProfileById = (req, res) => {
 
 //Proses Edit Profile - PUT data Edit Profil
 exports.editProfil = (req, res) => {
-    const id = req.params.id;
+    const id = req.query.id;
 
     UserDosen.update(req.body, {
         where: {
