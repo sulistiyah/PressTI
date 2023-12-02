@@ -1,5 +1,5 @@
 const { verifikasiRegister } = require("../middleware");
-const { authJwt} = require("../middleware")
+const { authJwtMahasiswa} = require("../middleware")
 const controllerUser = require("../controllers/auth_mahasiswa_controller.js");
 const constrollerProgramStudi = require("../controllers/program_studi_controller.js")
 const controllerKelas = require("../controllers/kelas_controller.js")
@@ -30,57 +30,56 @@ module.exports = app => {
 
   //GET ALL My Profile - Data Mahasiswa
   router.get(   "/my_profile", 
-                [ authJwt.verifikasiToken ], 
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ], 
                 controllerUser.findAllMyProfile)
 
   //GET My Profile By Id - Data Mahasiswa
   router.get(   "/my_profile/:id", 
-                [ authJwt.verifikasiToken ], 
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ], 
                 controllerUser.findOneMyProfileById)
 
   //PUT My Profile By Id (Edit Profil) - Data Mahasiswa
   router.put(   "/my_profile/:id",
-                [ authJwt.verifikasiToken ],
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ],
                 controllerUser.editProfil) 
 
   //PUT Change Password By Id (Ganti Kata Sandi) - Data Mahasiswa
   router.put( "/change_password/:id",
-              [ authJwt.verifikasiToken ],
+              [ authJwtMahasiswa.verifikasiTokenMahasiswa ],
               controllerUser.changePassword)
 
 //////////////////////////////////////////////////////////////////////PROGRAM STUDI//////////////////////////////////////////////////
   //GET Data Program Studi
   router.get(  "/program_studi", 
-                [ authJwt.verifikasiToken ], 
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ], 
                 constrollerProgramStudi.findAll)
 
   //GET Data Program Studi By Id
   router.get(  "/program_studi/:id", 
-                [authJwt.verifikasiToken ],
+                [authJwtMahasiswa.verifikasiTokenMahasiswa ],
                 constrollerProgramStudi.findOne)
 
 
 //////////////////////////////////////////////////////////////////////KELAS//////////////////////////////////////////////////
   //GET Data Program Studi
   router.get(  "/kelas", 
-                [ authJwt.verifikasiToken ], 
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ], 
                 controllerKelas.findAll)
 
   //GET Data Program Studi By Id
   router.get(  "/kelas/:id", 
-                [authJwt.verifikasiToken ],
+                [authJwtMahasiswa.verifikasiTokenMahasiswa ],
                 controllerKelas.findOne)             
                 
 //////////////////////////////////////////////////////////////////////MATA KULIAH//////////////////////////////////////////////////
   //GET Data Program Studi
   router.get(  "/mata_kuliah", 
-                [ authJwt.verifikasiToken ], 
+                [ authJwtMahasiswa.verifikasiTokenMahasiswa ], 
                 controllerMataKuliah.findAll)
 
   //GET Data Program Studi By Id
   router.get(  "/mata_kuliah/:id", 
-                [authJwt.verifikasiToken ],
+                [authJwtMahasiswa.verifikasiTokenMahasiswa ],
                 controllerMataKuliah.findOne)                        
-         
   
 };

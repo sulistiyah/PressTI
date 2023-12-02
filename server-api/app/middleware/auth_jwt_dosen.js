@@ -4,7 +4,7 @@ const configJwt = require("../config/auth_config.js")
 // const UserMahasiswa = db.userMahasiswa
 
 
-verifikasiToken = (req, res, next) => {
+verifikasiTokenDosen = (req, res, next) => {
     let token = req.headers["x-access-token"]
 
     if(!token) {
@@ -26,8 +26,8 @@ verifikasiToken = (req, res, next) => {
 }
 
 
-const authJwt = {
-    verifikasiToken: verifikasiToken,
+const authJwtDosen = {
+    verifikasiTokenDosen: verifikasiTokenDosen,
 }
 
-module.exports = authJwt
+module.exports = authJwtDosen
