@@ -56,8 +56,8 @@ exports.create = (req, res) => {
 
 //Function menemukan semua data kelas dan menemukan data dengan query tertentu
 exports.findAll = (req, res) => {
-  const kelas = req.query.kelas
-  const condition = kelas? { kelas : { [Op.like]: `%${kelas}%` } } : null
+  const id = req.query.id
+  const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
   Kelas.findAll({ where : condition})
   .then(data => {

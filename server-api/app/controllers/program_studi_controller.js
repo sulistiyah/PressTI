@@ -29,8 +29,8 @@ exports.createProdi = (req, res) => {
 
 //Function GET => mendapatkan semua data dan mendapatkan data dengan query tertentu 
 exports.findAll = (req, res) => {
-    const programStudi = req.query.programStudi
-    const condition = programStudi? { programStudi : { [Op.like]: `%${programStudi}%` } } : null
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
     ProgramStudi.findAll({ where : condition})
         .then(data => {

@@ -188,8 +188,8 @@ exports.login = (req, res) => {
 
 //Proses Get Data Mahasiswa - GET My Profile
 exports.findAllMyProfile = (req, res) => {
-    const nim = req.query.nim
-    const condition = nim? { nim : { [Op.like]: `%${nim}%` } } : null
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
     UserMahasiswa.findAll({
         where : condition,

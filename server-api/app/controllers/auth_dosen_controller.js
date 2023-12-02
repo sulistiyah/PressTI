@@ -120,8 +120,8 @@ exports.login = (req, res) => {
 
 //Proses Get Data Dosen - GET My Profile
 exports.findAllMyProfile = (req, res) => {
-    const nip = req.query.nip
-    const condition = nip? { nip : { [Op.like]: `%${nip}%` } } : null
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
     UserDosen.findAll( { where : condition } )
         .then(data => {

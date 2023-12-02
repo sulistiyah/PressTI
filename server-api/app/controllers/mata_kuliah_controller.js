@@ -87,8 +87,8 @@ exports.create = (req, res) => {
 
 //Function GET => mendapatkan semua data dan mendapatkan data dengan query tertentu 
 exports.findAll = (req, res) => {
-    const mataKuliah = req.query.mataKuliah
-    const condition = mataKuliah? { mataKuliah : { [Op.like]: `%${mataKuliah}%` } } : null
+    const id = req.query.id
+    const condition = id? { mataKuliah : { [Op.like]: `%${id}%` } } : null
 
     MataKuliah.findAll({ where : condition})
         .then(data => {
