@@ -147,12 +147,12 @@ exports.login = (req, res) => {
             }
         );
 
-        UserMahasiswa.create({
-            token : token
-        })
+        // UserMahasiswa.create({
+        //     token : token
+        // })
 
-        data.token = token
-        data.save()
+        // data.token = token
+        // data.save()
 
         res.status(200).send({
             statusCode : 200,
