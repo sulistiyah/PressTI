@@ -188,7 +188,7 @@ exports.findOneMyProfileById = (req, res) => {
 
 //Proses Edit Profile - PUT data Edit Profil
 exports.editProfil = (req, res) => {
-    const id = req.query.id;
+    const id = req.params.id;
 
     UserDosen.update(req.body, {
         where: {
@@ -225,6 +225,38 @@ exports.editProfil = (req, res) => {
             message: err.message || "Some error occurred while updating the User."
         });
     });
+}
+
+exports.editcoba = (req, res) => {
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } ,
+nim : {[Op.like]: `%${nim}`}} : null
+
+    UserDosen.findAll( { where : condition } )
+        .then(data => {
+            const formattedData = data.map(dosen => ({
+                id: dosen.id,
+                nip: dosen.nip,
+                nama: dosen.nama,
+                email: dosen.email,
+                noTelepon: dosen.noTelepon,
+                image: dosen.image
+            }));
+        
+            res.status(200).send({
+                statusCode : 200,
+                message: "Succes Get Data Dosen",
+                data: formattedData
+            });
+            
+        })
+        .catch(err => {
+            res.status(500).send({
+                statusCode : 500,
+                message:
+                err.message || "Failed Get Data Dosen"
+            })
+        })
 }
 
 
