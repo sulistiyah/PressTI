@@ -154,7 +154,6 @@ exports.findAllMyProfile = (req, res) => {
 //Proses GET Data Dosen - GET My Profile By Id
 exports.findOneMyProfileById = (req, res) => {
     const id = req.params.id;
-  
     UserDosen.findByPk( id )
       .then(data => {
         if (data) {
