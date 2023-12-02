@@ -25,7 +25,7 @@ module.exports = app => {
   //               controller.checkFace)
 
   //GET My Profile By Id - Data Mahasiswa // mendaftarkan wajah
-  router.post(   "/create-face", upload.single('images', 'label'), 
-                [ authJwt.verifikasiToken ], 
-                controller.faceUpload)
+  // router.post(   "/create-face", upload.single('images', 'label'), 
+  //               [ authJwt.verifikasiToken ], 
+  //               controller.faceUpload)
 }
