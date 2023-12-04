@@ -185,6 +185,42 @@ exports.findOneMyProfileById = (req, res) => {
       });
 };
 
+exports.findOneById = (req, res) => {
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
+
+    UserDosen.findByPk(  { where : condition } )
+      .then(data => {
+        if (data) {
+          res.status(200).send({
+            statusCode : 200,
+            message: "Succes Get Data Dosen By Id",
+            data: {
+                id: data.id,
+                nip: data.nip,
+                nama: data.nama,
+                email: data.email,                   
+                noTelepon: data.noTelepon,
+                image: data.image
+                
+            }
+          })
+        } else {
+          res.status(404).send({
+            statusCode : 404,
+            message: `Cannot find Dosen with id=${id}.`
+          });
+        }
+      })
+      .catch(err => {
+        res.status(500).send({
+            statusCode : 500,
+          message: "Error retrieving Dosen with id=" + id
+        });
+      });
+};
+
+
 
 //Proses Edit Profile - PUT data Edit Profil
 exports.editProfil = (req, res) => {

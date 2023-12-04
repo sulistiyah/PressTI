@@ -38,6 +38,11 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ], 
                 controllerUser.findOneMyProfileById)
 
+
+                router.get(   "/my_profile", 
+                [ authJwtDosen.verifikasiTokenDosen ], 
+                controllerUser.findOneById)
+
   //PUT My Profile By Id (Edit Profil) - Data dosen
   router.put(   "/my_profile/:id",
                 [ authJwtDosen.verifikasiTokenDosen ],
