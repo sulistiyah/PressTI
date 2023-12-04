@@ -191,7 +191,7 @@ exports.editProfil = (req, res) => {
     const id = req.query.id
     const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
-    UserDosen.update(req.body, { where : condition })
+    UserDosen.update(req.body)
     .then(() => {
         // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
         return UserDosen.findByPk(id);
