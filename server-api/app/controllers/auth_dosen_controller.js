@@ -189,7 +189,7 @@ exports.findOneById = (req, res) => {
     const id = req.query.id
     const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
-    UserDosen.findByPk(  { where : condition } )
+    UserDosen.findAll(  { where : condition } )
       .then(data => {
         if (data) {
           res.status(200).send({
