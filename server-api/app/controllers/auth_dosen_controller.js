@@ -3,8 +3,7 @@ const auth_config = require("../config/auth_config")
 const UserDosen = db.userDosen
 const Op = db.Sequelize.Op;
 const  jwt = require("jsonwebtoken")
-const bcrypt = require("bcryptjs");
-const { where } = require("sequelize");
+const bcrypt = require("bcryptjs")
 
 
 //Proses Register Dosen
@@ -192,7 +191,7 @@ exports.editProfil = (req, res) => {
     const id = req.query.id
     const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
-    UserDosen.update(req.body, {where : condition})
+    UserDosen.update(req.body,  { where : condition })
     .then(() => {
         // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
         return UserDosen.findByPk(id);
