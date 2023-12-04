@@ -39,7 +39,7 @@ module.exports = app => {
                 controllerUser.findOneMyProfileById)
 
 
-                router.get(   "/my_profile", 
+                router.get(   "/profile", 
                 [ authJwtDosen.verifikasiTokenDosen ], 
                 controllerUser.findOneById)
 
@@ -48,7 +48,7 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
-                router.put(   "/profile",
+                router.put(   "/my_profile",
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
