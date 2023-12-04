@@ -48,7 +48,7 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
-                router.put(   "/my_profile",
+                router.put(   "/profile",
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
