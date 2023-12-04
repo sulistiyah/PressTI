@@ -43,20 +43,15 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
-                router.put(   "/my_profile",
-                [ authJwtDosen.verifikasiTokenDosen ],
-                controllerUser.editProfil) 
-                
-                router.put(   "/my_profile/coba",
-                [ authJwtDosen.verifikasiTokenDosen ],
-                controllerUser.editcoba)
-
   //PUT Change Password By Id (Ganti Kata Sandi) - Data dosen
   router.put( "/change_password/:id",
               [ authJwtDosen.verifikasiTokenDosen ],
               controllerUser.changePassword)
 
   
+  router.post("/create_coba", controllerUser.createCoba)    
+  
+  router.put("/create_coba/:id", controllerUser.updateCoba)
 
 
 

@@ -188,13 +188,10 @@ exports.findOneMyProfileById = (req, res) => {
 
 //Proses Edit Profile - PUT data Edit Profil
 exports.editProfil = (req, res) => {
-    const id = req.params.id;
+    const id = req.query.id
+    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
-    UserDosen.update(req.body, {
-        where: {
-            id: id
-        }
-    })
+    UserDosen.update(req.body, { where : condition })
     .then(() => {
         // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
         return UserDosen.findByPk(id);
@@ -227,37 +224,6 @@ exports.editProfil = (req, res) => {
     });
 }
 
-exports.editcoba = (req, res) => {
-    const id = req.query.id
-    const condition = id? { id : { [Op.like]: `%${id}%` } ,
-nim : {[Op.like]: `%${nim}`}} : null
-
-    UserDosen.findAll( { where : condition } )
-        .then(data => {
-            const formattedData = data.map(dosen => ({
-                id: dosen.id,
-                nip: dosen.nip,
-                nama: dosen.nama,
-                email: dosen.email,
-                noTelepon: dosen.noTelepon,
-                image: dosen.image
-            }));
-        
-            res.status(200).send({
-                statusCode : 200,
-                message: "Succes Get Data Dosen",
-                data: formattedData
-            });
-            
-        })
-        .catch(err => {
-            res.status(500).send({
-                statusCode : 500,
-                message:
-                err.message || "Failed Get Data Dosen"
-            })
-        })
-}
 
 
 //Proses Penggantian Password - PUT data Edit Profil
@@ -320,3 +286,62 @@ exports.changePassword = (req, res) => {
             });
         });
 };
+
+exports.createCoba = (req, res) => {
+    const payload = req.body
+
+    UserDosen.create(payload)
+    .then((data) => {
+        res.json({
+            data
+        })
+    })
+    .catch((error) => {
+        res.json({
+            message : error.message
+        })
+    })
+}
+
+exports.updateCoba = (req, res) => {
+    const payload = req.body
+    const id = req.params.id
+
+    UserDosen.update( payload, {
+        where : {
+            id : id
+        }
+    })
+    .then((data) => {
+        res.json({
+            data:data
+        })
+    })
+    // .then(payload => {
+    //     if (payload) {
+    //       res.status(200).send({
+    //         statusCode : 200,
+    //         message: "Succes Update",
+    //         data: {
+    //             id: payload.id,
+    //             nip: payload.nip,
+    //             nama: payload.nama,
+    //             email: payload.email,                   
+    //             noTelepon: payload.noTelepon,
+    //             image: payload.image
+                
+    //         }
+    //       })
+    //     } else {
+    //       res.status(404).send({
+    //         statusCode : 404,
+    //         message: `Cannot find Dosen with id=${id}.`
+    //       });
+    //     }
+    //   })
+    .catch((error) => {
+        res.json({
+            message : error.message
+        })
+    })
+}

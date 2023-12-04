@@ -1,123 +1,279 @@
 const db = require("../models")
-const auth_config = require("../config/auth_config")
-const  jwt = require("jsonwebtoken")
-const multer = require('multer')
-const { validationResult } = require('express-validator');
-const faceapi = require('face-api.js')
-const { Canvas, Image } = require('canvas')
-const canvas = require('canvas')
-const Op = db.Sequelize.Op;
-const UserMahasiswa = db.userMahasiswa
 const Face = db.face
-const ProgramStudi = db.programStudi
-const Kelas = db.kelas
+const faceapi = require('face-api.js')
+const canvas = require('canvas')
+const path = require("path")
+const fs = require("fs");
+// const upload = require('../middleware/multer.js')
+const { promisify } = require("util");
 
-// Konfigurasi multer untuk menangani unggah file
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const unlinkAsync = promisify(fs.unlink);
 
 
-//Mendeteksi gambar dan melabel gambar yang terdeteksi serta dimasukan ke dalam database yang ada
-async function uploadLabeledImages(images, label) {
-    try{
-        let counter = 0
-        const descriptions = []
+// Memuat model face-api.js
+async function loadModels() {
+    await faceapi.nets.ssdMobilenetv1.loadFromDisk('./models');
+    await faceapi.nets.faceRecognitionNet.loadFromDisk('./models');
+    await faceapi.nets.faceLandmark68Net.loadFromDisk('./models');
+  }
+  
+  loadModels();
 
-        //Loop melalui gambar
-        for (let i = 0; i < images.length; i++) {
-            const img = await canvas.loadImage(images[i].buffer)
-            counter = (i / images.length) * 100
-            console.log(`Progress = ${counter}%`)
+  // Pemanggilan fungsi monkeyPatch agar face-api.js dapat berjalan di lingkungan Node.js
+  faceapi.env.monkeyPatch({
+     Canvas: canvas, 
+     Image: canvas.Image, 
+     ImageData: canvas.ImageData 
+  });
 
-            //Membaca setidap wajah dan menyimpan deskripsi wajah dalam araay descriptions
-            const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
-            descriptions.push(detections.descriptor)
-        }
 
-        //Membuat dokumen wajah baru dengan label yang diberikan dan menyimpannya ke dalam database
-       await Face.create({
-            label : label,
-            descriptions : descriptions
-        })
+  exports.detectAndSaveFace = async (req, res) => {
+    // try {
+    //   if (!req.file) {
+    //     return res.status(400).json({ message: "Invalid file" });
+    //   }
+  
+    //   // const imageBuffer =  Buffer.from(req.body.image, 'base64');
+    //   const imageBuffer = await canvas.loadImage(imageBuffer)
+    //   // const tempImagePath = path.join('app/resources/static/assets/tmp');
+    //   // const image = await canvas.loadImage(imageBuffer);
 
-    } catch (err) {
-        console.log(err)
-        return err
-    }
+    //   // fs.writeFileSync(tempImagePath, imageBuffer);
+  
+    //   // Implementasi face detection menggunakan face-api.js
+    //   const detections = await faceapi.detectAllFaces(imageBuffer).withFaceLandmarks().withFaceDescriptors();
+  
+    //   // Simpan data wajah ke dalam database
+    //   const savedFaces = await Promise.all(detections.map(async (detection) => {
+    //     return Face.create({
+    //       label: 'Unknown',
+    //       image: imageBuffer,
+    //     });
+    //   }));
 
-}
+    //   // await unlinkAsync(tempImagePath);
+  
+    //   res.status(200).json({
+    //     message: "Face detection successful",
+    //     faces: savedFaces,
+    //   });
+    // } catch (error) {
+    //   console.error(error);
+    //   console.log('Request Body:', req.body);
+    //   res.status(500).json({ error: "Internal server error" });
+    // }
 
-//face Uplaod - upload data wajah ke dalam database
-exports.faceUpload = async (req, res) => {
-    const errors = validationResult(req)
-    if(!errors.isEmpty()){
-        return res.status(400).json({
-            statusCode : 400,
-            message : errors.array()
-        })
-    }
+  }
+  
+
+  // // Fungsi untuk menyimpan wajah ke database
+  // async function saveFaceToDatabase(label, descriptor) {
+  //   try {
+  //     await Face.create({
+  //       label,
+  //       descriptor: JSON.stringify(descriptor),
+  //     });
+  //     console.log('Face saved to database.');
+  //   } catch (error) {
+  //     console.error('Error saving face to database:', error.message);
+  //   }
+  // }
+  
+  // // Fungsi untuk mendeteksi dan menyimpan wajah
+  // async function detectAndSaveFace(req, res) {
+  //   try {
+  //     if (!req.file || !req.file.path) {
+  //       return res.status(400).json({ 
+  //         success: false, 
+  //         message: 'File not provided.' 
+  //       });
+  //     }
+  //     const img = await canvas.loadImage(req.file.path);
+  //     const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+  
+  //     if (detections.length > 0) {
+  //       const { descriptor } = detections[0];
+  //       const label = 'Unknown'; // Assign a label or fetch from req.body
+  //       saveFaceToDatabase(label, descriptor);
+  //       res.json({ success: true, message: 'Face detected and saved.' });
+  //     } else {
+  //       res.json({ success: false, message: 'No face detected.' });
+  //     }
+  //   } catch (error) {
+  //     console.error('Error detecting face:', error.message);
+  //     res.status(500).json({ success: false, message: 'Internal Server Error' });
+  //     console.log(error)
+  //   }
+  // }
+  
+  // module.exports = {
+  //   detectAndSaveFace,
+  // };
+  
+
+
+
+
+// async function uploadLabeledImages(req, res) {
+//     try {
+//       const { File1, File2, File3, label } = req.files;
+//       const images = [File1.tempFilePath, File2.tempFilePath, File3.tempFilePath];
+//       const descriptions = [];
+  
+//       for (const imagePath of images) {
+//         const img = await canvas.loadImage(imagePath);
+//         const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor();
+//         descriptions.push(detections.descriptor);
+//       }
+  
+//       const createFace = await FaceModel.create({
+//         label: label,
+//         descriptions: descriptions,
+//       });
+  
+//       res.json({ message: "Face data stored successfully", data: createFace });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Something went wrong, please try again.", error: error.message });
+//     }
+//   }
+  
+//   async function getDescriptorsFromDB(req, res) {
+//     try {
+//       const faces = await FaceModel.findAll();
+  
+//       const faceMatcher = new faceapi.FaceMatcher(faces, 0.6);
+  
+//       const { tempFilePath } = req.files.File1;
+//       const img = await canvas.loadImage(tempFilePath);
+//       const temp = faceapi.createCanvasFromMedia(img);
+//       const displaySize = { width: img.width, height: img.height };
+//       faceapi.matchDimensions(temp, displaySize);
+  
+//       const detections = await faceapi.detectAllFaces(img).withFaceLandmarks().withFaceDescriptors();
+//       const resizedDetections = faceapi.resizeResults(detections, displaySize);
+//       const results = resizedDetections.map((d) => faceMatcher.findBestMatch(d.descriptor));
+  
+//       res.json({ results });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Something went wrong, please try again.", error: error.message });
+//     }
+//   }
+  
+//   module.exports = {
+//     uploadLabeledImages,
+//     getDescriptorsFromDB,
+//   };
+
+
+
+// // Konfigurasi multer untuk menangani unggah file
+// const storage = multer.memoryStorage();
+// const upload = multer({ storage: storage });
+
+
+// //Mendeteksi gambar dan melabel gambar yang terdeteksi serta dimasukan ke dalam database yang ada
+// async function uploadLabeledImages(images, label) {
+//     try{
+//         let counter = 0
+//         const descriptions = []
+
+//         //Loop melalui gambar
+//         for (let i = 0; i < images.length; i++) {
+//             const img = await canvas.loadImage(images[i].buffer)
+//             counter = (i / images.length) * 100
+//             console.log(`Progress = ${counter}%`)
+
+//             //Membaca setidap wajah dan menyimpan deskripsi wajah dalam araay descriptions
+//             const detections = await faceapi.detectSingleFace(img).withFaceLandmarks().withFaceDescriptor()
+//             descriptions.push(detections.descriptor)
+//         }
+
+//         //Membuat dokumen wajah baru dengan label yang diberikan dan menyimpannya ke dalam database
+//        await Face.create({
+//             label : label,
+//             descriptions : descriptions
+//         })
+
+//     } catch (err) {
+//         console.log(err)
+//         return err
+//     }
+
+// }
+
+// //face Uplaod - upload data wajah ke dalam database
+// exports.faceUpload = async (req, res) => {
+//     const errors = validationResult(req)
+//     if(!errors.isEmpty()){
+//         return res.status(400).json({
+//             statusCode : 400,
+//             message : errors.array()
+//         })
+//     }
     
-    // const File1 = req.files.File1.tempFilePath
-    // const File2 = req.files.File2.tempFilePath
-    // const File3 = req.files.File3.tempFilePath
-    const label = req.body.label
+//     // const File1 = req.files.File1.tempFilePath
+//     // const File2 = req.files.File2.tempFilePath
+//     // const File3 = req.files.File3.tempFilePath
+//     const label = req.body.label
 
-    //Pastikan anda sudah menyesuaikan dengan nama field pada postman (images, label)
-    const images = req.files
+//     //Pastikan anda sudah menyesuaikan dengan nama field pada postman (images, label)
+//     const images = req.files
 
-    try {
-        await uploadLabeledImages(images, label )
-        res.status(200).json({
-            statusCode : 200,
-            message : "Data Wajah Berhasil Disimpan"
-        })
-    } catch (err) {
-        console.log('Error : ', err)
-        res.status(500).json({
-            statusCode : 500,
-            message : "Terjadi kesalahan, silahkan coba lagi."
-        })
+//     try {
+//         await uploadLabeledImages(images, label )
+//         res.status(200).json({
+//             statusCode : 200,
+//             message : "Data Wajah Berhasil Disimpan"
+//         })
+//     } catch (err) {
+//         console.log('Error : ', err)
+//         res.status(500).json({
+//             statusCode : 500,
+//             message : "Terjadi kesalahan, silahkan coba lagi."
+//         })
         
-    }
-}
+//     }
+// }
 
 
-//Mendapatkan data deskripsi dari database
-async function getDescriptorsFromDB(image) {
-    try {
-        //Mengambil semua data wajah dari database
-        const faces = await Face.findAll()
+// //Mendapatkan data deskripsi dari database
+// async function getDescriptorsFromDB(image) {
+//     try {
+//         //Mengambil semua data wajah dari database
+//         const faces = await Face.findAll()
 
-        const labeledDescriptors = faces.map((face) => {
-            const descriptors = face.descriptions.map((desc) => new Float32Array(Object.values(desc)))
-            return new faceapi.LabeledFaceDescriptors(face.label, descriptors)
-        })
+//         const labeledDescriptors = faces.map((face) => {
+//             const descriptors = face.descriptions.map((desc) => new Float32Array(Object.values(desc)))
+//             return new faceapi.LabeledFaceDescriptors(face.label, descriptors)
+//         })
 
-        //Memuat face matcher untuk emncari wajah yang cocok
-        const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6)
+//         //Memuat face matcher untuk emncari wajah yang cocok
+//         const faceMatcher = new faceapi.FaceMatcher(labeledDescriptors, 0.6)
         
-        //Membaca gambar menggunakan canvas atau metode lainnya
-        const img = await canvas.loadImage(image)
-        const temp = faceapi.createCanvasFromMedia(img)
-        const displaySize = {
-            width: img.width, 
-            height: img.height
-        }
-        faceapi.matchDimensions(temp, displaySize)
+//         //Membaca gambar menggunakan canvas atau metode lainnya
+//         const img = await canvas.loadImage(image)
+//         const temp = faceapi.createCanvasFromMedia(img)
+//         const displaySize = {
+//             width: img.width, 
+//             height: img.height
+//         }
+//         faceapi.matchDimensions(temp, displaySize)
 
-        //Menemukan wajah yang cocok 
-        const detections = await faceapi.detectAllFaces(img). withFaceLandmarks().withFaceDescriptors()
-        const resizedDetections = faceapi.resizeResults(detections, displaySize)
-        const results = resizedDetections.map((d) => faceMatcher.findBestMatch(d.descriptor))
+//         //Menemukan wajah yang cocok 
+//         const detections = await faceapi.detectAllFaces(img). withFaceLandmarks().withFaceDescriptors()
+//         const resizedDetections = faceapi.resizeResults(detections, displaySize)
+//         const results = resizedDetections.map((d) => faceMatcher.findBestMatch(d.descriptor))
 
-        return results
+//         return results
 
-    } catch (err) {
-        console.log(err)
-        return err
+//     } catch (err) {
+//         console.log(err)
+//         return err
         
-    }
-}
+//     }
+// }
 
 
 //proses face recognition 

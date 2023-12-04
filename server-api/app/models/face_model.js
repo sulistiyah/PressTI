@@ -2,13 +2,16 @@ module.exports = (sequelizeDB, Sequelize) => {
     const Face = sequelizeDB.define("face", {
       label: {
         type: Sequelize.STRING,
-        required : true,
-        unique : true
+        allowNull: false,
       },
-      descriptions: {
-        type: Sequelize.STRING,
-        required : true
-      }
+      image : {
+        type: Sequelize.BLOB,
+        allowNull: false,
+      },
+      //  image: {
+      //   type: Sequelize.BLOB("long"),
+      //   allowNull: false,
+      // },
     }, {
         tableName : "face"
     })
