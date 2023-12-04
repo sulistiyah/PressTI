@@ -43,6 +43,10 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
+                router.put(   "/my_profile",
+                [ authJwtDosen.verifikasiTokenDosen ],
+                controllerUser.editProfil) 
+
   //PUT Change Password By Id (Ganti Kata Sandi) - Data dosen
   router.put( "/change_password/:id",
               [ authJwtDosen.verifikasiTokenDosen ],
