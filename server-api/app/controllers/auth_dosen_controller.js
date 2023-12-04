@@ -192,10 +192,10 @@ exports.editProfil = (req, res) => {
     const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
     UserDosen.update(req.body)
-    .then(() => {
-        // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
-        return UserDosen.findByPk(id);
-    })
+    // .then(() => {
+    //     // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
+    //     return UserDosen.findByPk(id);
+    // })
     .then(updatedData => {
         if (!updatedData) {
             return res.status(404).send({
