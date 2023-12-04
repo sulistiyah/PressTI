@@ -230,6 +230,7 @@ exports.findAllMyProfile = (req, res) => {
             
         })
         .catch( err => {
+            console.log(err)
             res.status(500).send({
                 statusCode : 500,
                 message: "Failed Get Data Mahasiswa"
