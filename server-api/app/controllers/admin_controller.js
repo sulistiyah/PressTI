@@ -20,7 +20,6 @@ exports.createAdmin = (req, res) => {
     email: req.body.email,
     noTelepon: req.body.noTelepon,
     password: bcrypt.hashSync(req.body.password, 8)
-
   };
 
   //Menyimpan data admin kedalam database
@@ -83,10 +82,43 @@ exports.loginAdmin = (req, res) => {
   });
 }
 
+exports.findAllAdmin = (req, res) => {
+  const admin = req.query.admin
+  const condition = admin? { admin : { [Op.like]: `%${admin}%` } } : null
 
+  Admin.findAll({ where : condition})
+      .then(data => {
+          res.status(200).send({
+              statusCode : 200,
+              message: "Succes Get Data Admin",
+              data : data,
+          })
+      })
+      .catch(err => {
+          res.status(500).send({
+              statusCode : 500,
+              message:
+              err.message || "Failed Get Data Admin"
+          })
+      })
+}
+
+
+// exports.logout = (req, res) => {
+    
+// }
 //=================================================PROGRAM STUDI======================================================//
 
 exports.createProgramStudi = (req, res) => {
+  //Validasi request
+  if(!req.body.kodeProdi || !req.body.programStudi) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
   //membuat data program studi
   const program_studi = {
     kodeProdi: req.body.kodeProdi,
@@ -161,6 +193,15 @@ exports.findOneProgramStudi = (req, res) => {
 
 //Update/Edit data program studi dengan parameter id
 exports.updateProgramStudi = (req, res) => {
+  //Validasi request
+  if(!req.body.kodeProdi || !req.body.programStudi) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
   ProgramStudi.update(req.body, {
       where: { id: req.params.id }
   })
@@ -233,6 +274,14 @@ exports.deleteProgramStudi = (req, res) => {
 //membuatd dan menyimpan data kelas ke database
 exports.createKelas = (req, res) => {
 
+  if(!req.body.kodeKelas || !req.body.kelas) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
   Kelas.create({
     kodeKelas : req.body.kodeKelas,
     kelas : req.body.kelas,
@@ -258,7 +307,16 @@ exports.createKelas = (req, res) => {
             res.status(200) .send({
               statusCode : 200,
               message : "Success Create Data Class",
-              data : data
+              data : {
+                id : data.id,
+                kodeKelas : data.kodeKelas,
+                kelas : data.kelas,
+                programStudi : {
+                  id : programStudi.id,
+                  kodeProdi : programStudi.kodeProdi,
+                  programStudi : programStudi.programStudi
+                }
+              }
             })
           }
         })
@@ -266,7 +324,7 @@ exports.createKelas = (req, res) => {
           res.status(500).send({
           statusCode : 500,
           message:
-             err.message || "Some error occurred while creating the Class."
+            err.message || "Some error occurred while creating the Class."
           });
         });
     }
@@ -275,7 +333,7 @@ exports.createKelas = (req, res) => {
     res.status(500).send({
     statusCode : 500,
     message:
-       err.message || "Some error occurred while creating the Class."
+      err.message || "Some error occurred while creating the Class."
     });
   });
 };
@@ -286,12 +344,30 @@ exports.createKelas = (req, res) => {
     const kelas = req.query.kelas
     const condition = kelas? { kelas : { [Op.like]: `%${kelas}%` } } : null
   
-    Kelas.findAll({ where : condition})
+    Kelas.findAll({ 
+      where : condition,
+      include: [
+        {
+          model : ProgramStudi,
+          as: "programStudi"
+        }
+      ]
+    })
     .then(data => {
+      const formdData = data.map(kelas => ({
+        id: kelas.id,
+        kodeKelas: kelas.kodeKelas,
+        kelas: kelas.kelas,
+        programStudi:{
+          id: kelas.programStudi.id,
+          kodeProdi: kelas.programStudi.kodeProdi,
+          programStudi: kelas.programStudi.programStudi
+        }
+      }))
       res.status(200).send({
-          statusCode : 200,
-          message: "Succes Get Data Class",
-          data : data,
+        statusCode : 200,
+        message: "Succes Get Data Class",
+        data : formdData,
       })
     })
     .catch(err => {
@@ -332,6 +408,14 @@ exports.createKelas = (req, res) => {
   
   //Update/Edit data kelas berdasarkan parameter id
   exports.updateKelas = (req, res) => {
+    if(!req.body.kodeKelas || !req.body.kelas) {
+      res.status(400).send({
+        statusCode : 400,
+        message: "Kolom Tidak Boleh Kosong!"
+      });
+      return;
+    }
+
     Kelas.update(req.body, {
         where: { id: req.params.id }
     })
@@ -405,6 +489,14 @@ exports.createKelas = (req, res) => {
 //=================================================================MATA KULIAH ==========================================================//
 
 exports.createMataKuliah = (req, res) => {
+  if(!req.body.kodeMatkul || !req.body.mataKuliah || !req.body.programStudiId || !req.body.kelasId) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
   //membuat data Mata Kuliah
   const mata_kuliah = {
     kodeMatkul: req.body.kodeMatkul,
@@ -414,7 +506,7 @@ exports.createMataKuliah = (req, res) => {
   };
 
   //Menyimpan data Mata Kuliah kedalam database
-  MataKuliah.create(mata_kuliah, { include : ["programStudi, kelas"] } )
+  MataKuliah.create(mata_kuliah )
   .then(data => {
     if (!data) {
         res.status(404).send({
@@ -490,21 +582,48 @@ exports.createMataKuliah = (req, res) => {
       const mataKuliah = req.query.mataKuliah
       const condition = mataKuliah? { mataKuliah : { [Op.like]: `%${mataKuliah}%` } } : null
   
-      MataKuliah.findAll({ where : condition})
-          .then(data => {
-              res.status(200).send({
-                  statusCode : 200,
-                  message: "Succes Get Data Mata Kuliah",
-                  data : data,
-              })
+      MataKuliah.findAll({ 
+        where : condition,
+        include: [
+          {
+            model : ProgramStudi,
+            as: "programStudi"
+          },
+          {
+            model : Kelas,
+            as: "kelas"
+          }
+        ]
+      })
+      .then(data => {
+          const formdData = data.map(matkul => ({
+            id: matkul.id,
+            kodeMatkul: matkul.kodeMatkul,
+            mataKuliah: matkul.mataKuliah,
+            programStudi:{
+              id: matkul.programStudi.id,
+              kodeProdi: matkul.programStudi.kodeProdi,
+              programStudi: matkul.programStudi.programStudi
+            },
+            kelas:{
+              id: matkul.kelas.id,
+              kodeKelas: matkul.kelas.kodeKelas,
+              kelas: matkul.kelas.kelas
+            }
+          }))
+          res.status(200).send({
+            statusCode : 200,
+            message: "Succes Get Data Mata Kuliah",
+            data : formdData,
           })
-          .catch(err => {
-              res.status(500).send({
-                  statusCode : 500,
-                  message:
-                  err.message || "Failed Get Data Mata Kuliah"
-              })
+      })
+      .catch(err => {
+          res.status(500).send({
+            statusCode : 500,
+            message:
+            err.message || "Failed Get Data Mata Kuliah"
           })
+      }) 
   }
   
   //Mendapatkan data Mata Kuliah dengan parameter id include data kelas 
@@ -536,6 +655,14 @@ exports.createMataKuliah = (req, res) => {
   
   //Update/Edit data Mata Kuliah dengan parameter id
   exports.updateMataKuliah = (req, res) => {
+    if(!req.body.kodeMatkul || !req.body.mataKuliah) {
+      res.status(400).send({
+        statusCode : 400,
+        message: "Kolom Tidak Boleh Kosong!"
+      });
+      return;
+    }
+
     MataKuliah.update(req.body, {
         where: { id: req.params.id }
     })
@@ -607,6 +734,14 @@ exports.createMataKuliah = (req, res) => {
 //=======================================================USER MAHASISWA===============================================================
 //Proses Register Mahasiswa
 exports.createUserMahasiswa = (req, res) => {
+  if(!req.body.nim || !req.body.nama || !req.body.programStudiId || !req.body.kelasId || !req.body.noTelepon) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
     //Save User To Database
     UserMahasiswa.create({
         nim : req.body.nim,
@@ -891,6 +1026,14 @@ exports.deleteUserMahasiswa = (req, res) => {
 //=======================================================USER DOSEN===============================================================
 //Proses CREATE Dosen
 exports.createUserDosen = (req, res) => {
+  if(!req.body.nip || !req.body.nama || !req.body.email || !req.body.noTelepon || !req.body.password || !req.body.rePassword) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
     //Save User To Database
     const hashedPassword = bcrypt.hashSync(req.body.password, 8);
     const hashedRePassword = bcrypt.hashSync(req.body.rePassword, 8);
@@ -1010,6 +1153,7 @@ exports.findOneUserDosen = (req, res) => {
 
 //Proses Edit User Dosen- PUT data Edit User Dosen
 exports.updateUserDosen = (req, res) => {
+   
     const id = req.params.id;
 
     UserDosen.update(req.body, {

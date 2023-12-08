@@ -39,14 +39,20 @@ db.kelas.belongsTo(db.programStudi, {
   as: "programStudi",
 })
 
-
 //Menyabungkan foreignKey tabel mata_kuliah dengan tabel program_studi
+db.programStudi.hasMany(db.matkul, {
+  foreignKey : "programStudiId",
+  as : "matkul"})
 db.matkul.belongsTo(db.programStudi, {
   foreignKey : "programStudiId",
   as: "programStudi"
 })
 
 //Menyabungkan foreignKey tabel mata_kuliah dengan tabel kelas
+db.kelas.hasMany(db.matkul, {
+  foreignKey : "kelasId",
+  as : "matkul"
+})
 db.matkul.belongsTo(db.kelas, {
   foreignKey : "kelasId",
   as: "kelas"
@@ -65,16 +71,29 @@ db.userMahasiswa.belongsTo(db.kelas, {
   as: "kelas",
 })
 
+db.programStudi.hasMany(db.setPresensi, {
+  foreignKey : "programStudiId",
+  as : "setPresensi"
+})
 db.setPresensi.belongsTo(db.programStudi, {
   foreignKey : "programStudiId",
   as : "programStudi"
 })
 
+db.kelas.hasMany(db.setPresensi, {
+  foreignKey : "kelasId",
+  as : "setPresensi"
+})
 db.setPresensi.belongsTo(db.kelas, {
   foreignKey : "kelasId",
   as : "kelas"
 })
 
+
+db.matkul.hasMany(db.setPresensi, {
+  foreignKey : "mataKuliahId",
+  as : "setPresensi"
+})
 db.setPresensi.belongsTo(db.matkul, {
   foreignKey : "mataKuliahId",
   as : "mataKuliah"

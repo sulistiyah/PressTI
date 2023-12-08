@@ -25,7 +25,7 @@ exports.create = (req, res) => {
         if (!data) {
             res.status(404).send({
                 statusCode : 404,
-                message: "Failed Register"
+                message: "Failed Set Presensi"
             });
         } else {
         // Mencari program studi berdasarkan ID yang diberikan
@@ -36,6 +36,7 @@ exports.create = (req, res) => {
                             statusCode : 404,
                             message: "Program Study not found"
                         });
+                        return
                     } 
                 })
                 // Mencari kelas berdasarkan ID yang diberikan
