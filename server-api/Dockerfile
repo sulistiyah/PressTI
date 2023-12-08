@@ -1,8 +1,10 @@
 FROM node:20
 
 WORKDIR /server-api
-COPY package.json .
+COPY package.json ./
 RUN npm install
 COPY . .
-CMD ["node", "server.js"]
+EXPOSE 8080
+CMD ["npm", "start"]
+#CMD ["node", "server.js"]
 
