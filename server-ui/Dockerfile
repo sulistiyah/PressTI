@@ -15,4 +15,4 @@ FROM nginx:1.18.0
 COPY --from=build-stage /server-ui/build /usr/share/nginx/html
 EXPOSE $REACT_DOCKER_PORT
 
-CMD nginx -g 'daemon off;'
+CMD nginx -g 'daemon off'
