@@ -43,5 +43,13 @@ module.exports = app => {
     router.get("/user_dosen/:id", admin.findOneUserDosen)
     router.put("/user_dosen/update/:id", admin.updateUserDosen)
     router.delete("/user_dosen/delete/:id", admin.deleteUserDosen)
+
+
+    //USER DOSEN
+    router.post("/set_presensi/create", admin.createSetPresensi)
+    router.get("/set_presensi", admin.findAllSetPresensi)
+    router.get("/set_presensi/:id", admin.findOneSetPresensi)
+    router.put("/set_presensi/update/:id", admin.updateSetPresensi)
+    router.delete("/set_presensi/delete/:id", admin.deleteSetPresensi)
     
 }

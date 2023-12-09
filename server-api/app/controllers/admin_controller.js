@@ -5,6 +5,7 @@ const Kelas = db.kelas
 const MataKuliah = db.matkul
 const UserMahasiswa = db.userMahasiswa
 const UserDosen =  db.userDosen
+const SetPresensi = db.setPresensi
 const Op = db.Sequelize.Op;
 const bcrypt = require("bcryptjs")
 const auth_config = require("../config/auth_config")
@@ -383,13 +384,26 @@ exports.createKelas = (req, res) => {
   exports.findOneKelas = (req, res) => {
     const id = req.params.id;
   
-    Kelas.findByPk(id, { include: ["programStudi"] })
+    Kelas.findByPk(id, { 
+      include: [{
+        model : ProgramStudi,
+        as: "programStudi"
+      }] 
+    })
       .then(data => {
         if (data) {
           res.status(200).send({
             statusCode : 200,
             message: "Succes Get Data Class By Id",
-            data : data,
+            data : {
+              id : data.id,
+              kodeKelas : data.kodeKelas,
+              programStudi : {
+                id : data.programStudi.id,
+                kodeProdi : data.programStudi.kodeProdi,
+                programStudi : data.programStudi.programStudi
+              }
+            },
           })
         } else {
           res.status(404).send({
@@ -407,7 +421,7 @@ exports.createKelas = (req, res) => {
   };
   
   //Update/Edit data kelas berdasarkan parameter id
-  exports.updateKelas = (req, res) => {
+  exports.updateKelas = async (req, res) => {
     if(!req.body.kodeKelas || !req.body.kelas) {
       res.status(400).send({
         statusCode : 400,
@@ -416,44 +430,51 @@ exports.createKelas = (req, res) => {
       return;
     }
 
-    Kelas.update(req.body, {
+    try {
+      const result = await Kelas.update(req.body, {
         where: { id: req.params.id }
-    })
-    .then(result => {
-      if (result[0]) {
-        Kelas.findByPk(req.params.id)
-          .then(kelas => {
-              const formattedData = {
-                  id: kelas.id,
-                  kodeKelas: kelas.kodeKelas,
-                  kelas: kelas.kelas,
-              };
+      });
   
-              res.status(200).send({
-                  statusCode : 200,
-                  message: "Class Update Successful",
-                  data: formattedData
-              });
-          })
-          .catch(err => {
-              res.status(500).send({
-                  statusCode : 500,
-                  message: err.message || "Some error occurred while retrieving the Class."
-              });
+      if (result[0]) {
+        const kelas = await Kelas.findByPk(req.params.id, {
+          include: ["programStudi"]
+        });
+  
+        if (!kelas) {
+          return res.status(404).send({
+            statusCode: 404,
+            message: `Cannot find Class with id=${req.params.id}.`
           });
+        }
+  
+        const formattedData = {
+          id: kelas.id,
+          kodeKelas: kelas.kodeKelas,
+          kelas: kelas.kelas,
+          programStudi: {
+            id: kelas.programStudi.id,
+            kodeProdi: kelas.programStudi.kodeProdi,
+            programStudi: kelas.programStudi.programStudi
+          }
+        };
+  
+        res.status(200).send({
+          statusCode: 200,
+          message: "Class Update Successful",
+          data: formattedData
+        });
       } else {
-          res.status(404).send({
-              statusCode : 404,
-              message: `Cannot update class with id=${req.params.id}. Maybe class was not found or req.body is empty!`
-          });
+        res.status(404).send({
+          statusCode: 404,
+          message: `Cannot update Class with id=${req.params.id}. Maybe Class was not found or req.body is empty!`
+        });
       }
-    })
-    .catch(err => {
+    } catch(err) {
         res.status(500).send({
             statusCode : 500,
             message: err.message || "Some error occurred while updating the Class."
         });
-    });
+    }
   };
   
   
@@ -654,7 +675,7 @@ exports.createMataKuliah = (req, res) => {
   };
   
   //Update/Edit data Mata Kuliah dengan parameter id
-  exports.updateMataKuliah = (req, res) => {
+  exports.updateMataKuliah = async (req, res) => {
     if(!req.body.kodeMatkul || !req.body.mataKuliah) {
       res.status(400).send({
         statusCode : 400,
@@ -663,44 +684,57 @@ exports.createMataKuliah = (req, res) => {
       return;
     }
 
-    MataKuliah.update(req.body, {
+    try {
+      const result = await MataKuliah.update(req.body, {
         where: { id: req.params.id }
-    })
-    .then(result => {
-      if (result[0]) {
-        MataKuliah.findByPk(req.params.id)
-          .then(matkul => {
-              const formattedData = {
-                  id: matkul.id,
-                  kodeMatkul: matkul.kodeMatkul,
-                  mataKuliah: matkul.mataKuliah,
-              };
+      });
   
-              res.status(200).send({
-                  statusCode : 200,
-                  message: "Mata Kuliah Update Successful",
-                  data: formattedData
-              });
-          })
-          .catch(err => {
-              res.status(500).send({
-                  statusCode : 500,
-                  message: err.message || "Some error occurred while retrieving the Mata Kuliah."
-              });
-          });
-      } else {
-          res.status(404).send({
-              statusCode : 404,
-              message: `Cannot update Mata Kuliah with id=${req.params.id}. Maybe Mata Kuliah was not found or req.body is empty!`
-          });
-      }
-    })
-    .catch(err => {
-        res.status(500).send({
-            statusCode : 500,
-            message: err.message || "Some error occurred while updating the Mata Kuliah."
+      if (result[0]) {
+        const mataKuliah = await MataKuliah.findByPk(req.params.id, {
+          include: ["programStudi", "kelas"]
         });
-    });
+  
+        if (!mataKuliah) {
+          return res.status(404).send({
+            statusCode: 404,
+            message: `Cannot find Mata Kuliah with id=${req.params.id}.`
+          });
+        }
+  
+        const formattedData = {
+          id: mataKuliah.id,
+          kodeMatkul: mataKuliah.kodeMatkul,
+          mataKuliah: mataKuliah.mataKuliah,
+          programStudi: {
+            id: mataKuliah.programStudi.id,
+            kodeProdi: mataKuliah.programStudi.kodeProdi,
+            programStudi: mataKuliah.programStudi.programStudi
+          },
+          kelas: {
+            id: mataKuliah.kelas.id,
+            kodeKelas: mataKuliah.kelas.kodeKelas,
+            kelas: mataKuliah.kelas.kelas
+          }
+        };
+  
+        res.status(200).send({
+          statusCode: 200,
+          message: "Mata Kuliah Update Successful",
+          data: formattedData
+        });
+      } else {
+        res.status(404).send({
+          statusCode: 404,
+          message: `Cannot update Mata Kuliah with id=${req.params.id}. Maybe Mata Kuliah was not found or req.body is empty!`
+        });
+      }
+    } catch (err) {
+      console.error(err);
+      res.status(500).send({
+        statusCode: 500,
+        message: err.message || "Some error occurred while updating the Mata Kuliah."
+      });
+    }
   };
   
   // Delete salah satu data Mata Kuliah dengan parameter id
@@ -926,69 +960,63 @@ exports.findOneUserMahasiswa = (req, res) => {
 
 
 //Proses Edit Data USer Mahasiswa
-exports.updateUserMahasiswa = (req, res) => {
+exports.updateUserMahasiswa = async (req, res) => {
     UserMahasiswa.update(req.body, {
         where: {
             id: req.params.id
         }
     })
-    .then(result => {
-        if (result[0]) {
-            UserMahasiswa.findByPk(req.params.id, {
-                include: [
-                    {
-                        model: ProgramStudi,
-                        as: "programStudi"
-                    },
-                    {
-                        model: Kelas,
-                        as: "kelas"
-                    }
-                ]
-            })
-            .then(mahasiswa => {
-                const formattedData = {
-                    id: mahasiswa.id,
-                    nim: mahasiswa.nim,
-                    nama: mahasiswa.nama,
-                    programStudi: {
-                        id: mahasiswa.programStudi.id,
-                        kodeProdi: mahasiswa.programStudi.kodeProdi,
-                        programStudi: mahasiswa.programStudi.programStudi
-                    },
-                    kelas: {
-                        id: mahasiswa.kelas.id,
-                        kodeKelas: mahasiswa.kelas.kodeKelas,
-                        kelas: mahasiswa.kelas.kelas
-                    },
-                    noTelepon: mahasiswa.noTelepon
-                };
-
-                res.status(200).send({
-                    statusCode : 200,
-                    message: "User Update Successful",
-                    data: formattedData
-                });
-            })
-            .catch(err => {
-                res.status(500).send({
-                    statusCode : 500,
-                    message: err.message || "Some error occurred while retrieving the User."
-                });
-            });
-        } else {
-            res.status(404).send({
-                statusCode : 404,
-                message: `Cannot update user with id=${req.params.id}. Maybe user was not found or req.body is empty!`
-            });
+    try {
+      const result = await db.userMahasiswa.update(req.body, {
+        where: { id: req.params.id }
+      });
+  
+      if (result[0]) {
+        const userMahasiswa = await db.userMahasiswa.findByPk(req.params.id, {
+          include: ["programStudi", "kelas"]
+        });
+  
+        if (!userMahasiswa) {
+          return res.status(404).send({
+            statusCode: 404,
+            message: `Cannot find USer with id=${req.params.id}.`
+          });
         }
-    })
-    .catch(err => {
+  
+        const formattedData = {
+          id: userMahasiswa.id,
+          nim: userMahasiswa.nim,
+          nama: userMahasiswa.nama,
+          programStudi: {
+            id: userMahasiswa.programStudi.id,
+            kodeProdi: userMahasiswa.programStudi.kodeProdi,
+            programStudi: userMahasiswa.programStudi.programStudi
+          },
+          kelas: {
+            id: userMahasiswa.kelas.id,
+            kodeKelas: userMahasiswa.kelas.kodeKelas,
+            kelas: userMahasiswa.kelas.kelas
+          },
+          noTelepon : userMahasiswa.noTelepon
+        };
+  
+        res.status(200).send({
+          statusCode: 200,
+          message: "User Update Successful",
+          data: formattedData
+        });
+      } else {
+        res.status(404).send({
+          statusCode: 404,
+          message: `Cannot update User with id=${req.params.id}. Maybe User was not found or req.body is empty!`
+        });
+      }
+    } catch (err) {
         res.status(500).send({
             statusCode : 500,
             message: err.message || "Some error occurred while updating the User."
         });
-    });
+    };
 }
 
 
@@ -1221,3 +1249,283 @@ exports.deleteUserDosen = (req, res) => {
       });
     });
 };
+
+
+//=======================================================USER DOSEN===============================================================
+//Create Set Presensi
+exports.createSetPresensi = async (req, res) => {
+  try {
+      const data = await SetPresensi.create({
+          programStudiId: req.body.programStudiId,
+          kelasId: req.body.kelasId,
+          mataKuliahId: req.body.mataKuliahId,
+          tanggal: req.body.tanggal,
+          jamMulai: req.body.jamMulai,
+          jamBerakhir: req.body.jamBerakhir
+      }, {
+          include: ["programStudi", "kelas", "mataKuliah"]
+      });
+
+      if (!data) {
+          return res.status(404).send({
+              statusCode: 404,
+              message: "Failed Set Presensi"
+          });
+      }
+
+      const [programStudi, kelas, mataKuliah] = await Promise.all([
+          ProgramStudi.findByPk(req.body.programStudiId),
+          Kelas.findByPk(req.body.kelasId),
+          MataKuliah.findByPk(req.body.mataKuliahId)
+      ]);
+
+      if (!programStudi) {
+          return res.status(404).send({
+              statusCode: 404,
+              message: "Program Study not found"
+          });
+      }
+
+      if (!kelas) {
+          return res.status(404).send({
+              statusCode: 404,
+              message: "Class not found"
+          });
+      }
+
+      if (!mataKuliah) {
+          return res.status(404).send({
+              statusCode: 404,
+              message: "Kelas not found"
+          });
+      }
+
+      return res.status(200).send({
+          statusCode: 200,
+          message: "Setting Presensi Successful",
+          data: {
+              id: data.id,
+              programStudi: {
+                  id: programStudi.id,
+                  kodeProdi: programStudi.kodeProdi,
+                  programStudi: programStudi.programStudi,
+              },
+              kelas: {
+                  id: kelas.id,
+                  kodeKelas: kelas.kodeKelas,
+                  kelas: kelas.kelas,
+              },
+              mataKuliah: {
+                  id: mataKuliah.id,
+                  kodeMatkul: mataKuliah.kodeMatkul,
+                  mataKuliah: mataKuliah.mataKuliah
+              },
+              tanggal: data.tanggal,
+              jamMulai: data.jamMulai,
+              jamBerakhir: data.jamBerakhir
+          }
+      });
+  } catch (err) {
+      console.error(err);
+      return res.status(500).send({
+          statusCode: 500,
+          message: err.message || "Some error occurred while creating the Set Presensi."
+      });
+  }
+};
+
+//Function GET => mendapatkan semua data dan mendapatkan data dengan query tertentu 
+exports.findAllSetPresensi = (req, res) => {
+  const setPresensi = req.query.setPresensi
+  const condition = setPresensi? { setPresensi : { [Op.like]: `%${setPresensi}%` } } : null
+
+  SetPresensi.findAll({ 
+    where : condition, 
+    include: [
+      {
+        model : ProgramStudi,
+        as: "programStudi"
+      },
+      {
+        model : Kelas,
+        as: "kelas"
+      },
+      {
+        model : MataKuliah,
+        as: "mataKuliah"
+      }
+    ]
+  })
+      .then(data => {
+        const formdData = data.map(setpresensi => ({
+          id: setpresensi.id,
+          tanggal: setpresensi.tanggal,
+          jamMulai: setpresensi.jamMulai,
+          jamBerakhir : setpresensi.jamBerakhir,
+          programStudi:{
+            id: setpresensi.programStudi.id,
+            kodeProdi: setpresensi.programStudi.kodeProdi,
+            programStudi: setpresensi.programStudi.programStudi
+          },
+          kelas:{
+            id: setpresensi.kelas.id,
+            kodeKelas: setpresensi.kelas.kodeKelas,
+            kelas: setpresensi.kelas.kelas
+          },
+          mataKuliah: {
+            id: setpresensi.mataKuliah.id,
+            kodeMatkul: setpresensi.mataKuliah.kodeMatkul,
+            mataKuliah: setpresensi.mataKuliah.mataKuliah
+          }
+        }))
+        res.status(200).send({
+          statusCode : 200,
+          message: "Succes Get Data Mata Kuliah",
+          data : formdData,
+        })
+      })
+      .catch(err => {
+          res.status(500).send({
+              statusCode : 500,
+              message:
+              err.message || "Failed Get Data Set Presensi"
+          })
+      })
+}
+
+//Mendapatkan data Set Presensi dengan parameter id include data kelas 
+  exports.findOneSetPresensi = (req, res) => {
+  const id = req.params.id;
+
+  SetPresensi.findByPk(id, { include: ["programStudi", "kelas", "mataKuliah"] })
+      .then(data => {
+      if (data) {
+          res.status(200).send({
+          statusCode : 200,
+          message: "Succes Get Data Set Presensi By Id",
+          data : { 
+              id: data.id,
+              tanggal: data.tanggal,
+              jamMulai: data.jamMulai,
+              jamBerakhir : data.jamBerakhir,
+              programStudi: {
+                  id : data.programStudi.id,
+                  kodeProdi : data.programStudi.kodeProdi,
+                  programStudi : data.programStudi.programStudi
+              },
+              kelas: {
+                  id : data.kelas.id,
+                  kodeKelas : data.kelas.kodeKelas,
+                  kelas : data.kelas.kelas
+              },
+              mataKuliah: {
+                  id : data.mataKuliah.id,
+                  kodeMatkul : data.mataKuliah.kodeMatkul,
+                  mataKuliah : data.mataKuliah.mataKuliah
+              }                   
+          }
+          })
+      } else {
+          res.status(404).send({
+          statusCode : 404,
+          message: `Cannot find Set Presensi with id=${id}.`
+          });
+      }
+      })
+      .catch(err => {
+      res.status(500).send({
+          statusCode : 500,
+          message: "Error retrieving Set Presensi with id=" + id
+      });
+      });
+  };
+
+//Update/Edit data Set Presensi dengan parameter id
+exports.updateSetPresensi = async (req, res) => {
+  try {
+    const result = await SetPresensi.update(req.body, {
+      where: { id: req.params.id }
+    });
+
+    if (result[0]) {
+      const setPresensi = await SetPresensi.findByPk(req.params.id, {
+        include: ["programStudi", "kelas", "mataKuliah"]
+      });
+
+      if (!setPresensi) {
+        return res.status(404).send({
+          statusCode: 404,
+          message: `Cannot find Set Presensi with id=${req.params.id}.`
+        });
+      }
+
+      const formattedData = {
+        id: setPresensi.id,
+        tanggal: setPresensi.tanggal,
+        jamMulai: setPresensi.jamMulai,
+        jamBerakhir: setPresensi.jamBerakhir,
+        programStudi: {
+          id: setPresensi.programStudi.id,
+          kodeProdi: setPresensi.programStudi.kodeProdi,
+          programStudi: setPresensi.programStudi.programStudi
+        },
+        kelas: {
+          id: setPresensi.kelas.id,
+          kodeKelas: setPresensi.kelas.kodeKelas,
+          kelas: setPresensi.kelas.kelas
+        },
+        mataKuliah: {
+          id: setPresensi.mataKuliah.id,
+          kodeMatkul: setPresensi.mataKuliah.kodeMatkul,
+          mataKuliah: setPresensi.mataKuliah.mataKuliah
+        }
+      };
+
+      res.status(200).send({
+        statusCode: 200,
+        message: "Set Presensi Update Successful",
+        data: formattedData
+      });
+    } else {
+      res.status(404).send({
+        statusCode: 404,
+        message: `Cannot update Set Presensi with id=${req.params.id}. Maybe Set Presensi was not found or req.body is empty!`
+      });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).send({
+      statusCode: 500,
+      message: err.message || "Some error occurred while updating the Set Presensi."
+    });
+  }
+};
+
+// Delete salah satu data Set Presensi dengan parameter id
+exports.deleteSetPresensi = (req, res) => {
+const id = req.params.id;
+
+SetPresensi.destroy({
+  where: { id: id }
+})
+  .then(num => {
+    if (num == 1) {
+      res.status(200).send({
+        statusCode : 200,
+        message: `Set Presensi was deleted where id = ${id} successfully!`
+      });
+    } else {
+      res.status(404).send({
+        statusCode : 404,
+        message: `Cannot delete Set Presensi with id= ${id}. Maybe Set Presensi was not found!`
+      });
+    }
+  })
+  .catch(err => {
+    res.status(500).send({
+      statusCode : 500,
+      message: "Could not delete Set Presensi with id=" + id
+    });
+  });
+};
+

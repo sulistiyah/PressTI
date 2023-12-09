@@ -20,49 +20,55 @@ exports.detectFace = async (req, res) => {
   try{
     // Determine the image type based on the file's MIME type
   let imageType;
-  switch (req.file.mimetype) {
-    case 'image/jpeg':
-      imageType = 'image/jpeg';
-      break;
-    case 'image/png':
-      imageType = 'image/png';
-      break;
-    // Add more cases for other supported image types if needed
-    default:
-      return res.status(400).json({
-        success: false,
-        error: 'Unsupported image type'
-      });
+  let buffer;
+
+  if(req.file) {
+    buffer = req.file.buffer;
+    imageType = req.file.mimetype
+  } else {
+    return res.status(400).json({
+      statusCode : 400,
+      success : false,
+      error :' Image file not provided'
+    })
   }
+  
 
   // Additional console log to display information about the image buffer
   console.log('Buffer Information:', {
-    size: req.file.buffer ? req.file.buffer.length : "undefiend",
+    size: buffer ? buffer.length : "undefiend",
     type: req.file.mimetype,
   });
 
   //lakukan face detection pada gambar 
-  const buffer = req.file.buffer
-  const image = await loadImage(buffer);
+  // const buffer = req.file.buffer
+  // const image = await loadImage(buffer);
   // const blob = new Blob([buffer], { type: imageType })
   // const image = await faceapi.bufferToImage(buffer);
 
    // Additional console log to display information about the image
   console.log('Image Information:', {
-    width: image.width,
-    height: image.height,
-    type: image.type,
+    size : buffer.length,
+    type : imageType,
+    // width: image.width,
+    // height: image.height,
+    // type: image.type,
   });
 
     //Load models
     await loadModels()
 
     //Mendeteksi wajah
+    const image = await faceapi.bufferToImage(buffer)
     const detections = await faceapi.detectAllFaces(image).withFaceLandmarks().withFaceDescriptors()
 
     // Simpan gambar ke database
     console.log('Before Face.create', detections);
-    const face = await Face.create({ image: buffer });
+    const face = await Face.create({ 
+      image: buffer,
+      width: image.buffer,
+      height: image.height,
+     });
     console.log('Face created:', face);
 
     res.status(200).send({
@@ -76,11 +82,28 @@ exports.detectFace = async (req, res) => {
   } catch (error){
     console.error('Error creating face:', error);
     return res.status(500).send({
+      statusCode : 500,
       success: false, 
       error: 'Internal Server Error' 
     });
   }
 }
+
+
+// switch (req.file.mimetype) {
+  //   case 'image/jpeg':
+  //     imageType = 'image/jpeg';
+  //     break;
+  //   case 'image/png':
+  //     imageType = 'image/png';
+  //     break;
+  //   // Add more cases for other supported image types if needed
+  //   default:
+  //     return res.status(400).json({
+  //       success: false,
+  //       error: 'Unsupported image type'
+  //     });
+  // }
 
 
 // exports.detectFace = async (req, res) => {

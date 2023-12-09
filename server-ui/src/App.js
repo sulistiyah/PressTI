@@ -23,6 +23,10 @@ import UserDosen from "./pages/user_dosen/UserDosen"
 import AddUserDosen from "./pages/user_dosen/AddUserDosen"
 import EditUserDosen from "./pages/user_dosen/EditUserDosen"
 
+import SetPresensi from "./pages/set_presensi/SetPresensi"
+import AddSetPresensi from "./pages/set_presensi/AddSetPresensi"
+import EditSetPresensi from "./pages/set_presensi/EditSetPresensi"
+
 
 
 
@@ -55,6 +59,10 @@ function App() {
           <Route path="/api/admin/user_dosen" element={ <UserDosen/> } />
           <Route path="/api/admin/user_dosen/create" element={ <AddUserDosen/> } />
           <Route path="/api/admin/user_dosen/update/:id" element={ <EditUserDosen/> } />
+
+          <Route path="/api/admin/set_presensi" element={ <SetPresensi/> } />
+          <Route path="/api/admin/set_presensi/create" element={ <AddSetPresensi/> } />
+          <Route path="/api/admin/set_presensi/update/:id" element={ <EditSetPresensi/> } />
 
         </Routes>
       </BrowserRouter>

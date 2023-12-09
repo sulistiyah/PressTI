@@ -6,6 +6,12 @@ module.exports = (sequelizeDB, Sequelize) => {
       // },
       image : {
         type: Sequelize.BLOB('long')
+      },
+      width : {
+        type: Sequelize.STRING
+      },
+      height : {
+        type: Sequelize.STRING
       }
       //  image: {
       //   type: Sequelize.BLOB("long"),
