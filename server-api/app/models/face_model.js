@@ -5,7 +5,7 @@ module.exports = (sequelizeDB, Sequelize) => {
       //   allowNull: false,
       // },
       image : {
-        type: Sequelize.BLOB
+        type: Sequelize.BLOB('long')
       }
       //  image: {
       //   type: Sequelize.BLOB("long"),
