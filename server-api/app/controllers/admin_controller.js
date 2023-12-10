@@ -494,14 +494,14 @@ exports.createKelas = (req, res) => {
         } else {
           res.status(404).send({
             statusCode : 404,
-            message: `Cannot delete Class with id=${id}. Maybe Class was not found!`
+            message: `Cannot delete Class with id = ${id}. Maybe Class was not found!`
           });
         }
       })
       .catch(err => {
         res.status(500).send({
           statusCode : 500,
-          message: "Could not delete Class with id=" + id
+          message: "Could not delete Class with id =" + id
         });
       });
   };
@@ -1181,7 +1181,6 @@ exports.findOneUserDosen = (req, res) => {
 
 //Proses Edit User Dosen- PUT data Edit User Dosen
 exports.updateUserDosen = (req, res) => {
-   
     const id = req.params.id;
 
     UserDosen.update(req.body, {

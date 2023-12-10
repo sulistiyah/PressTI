@@ -10,6 +10,14 @@ const bcrypt = require("bcryptjs")
 
 //Proses Register Mahasiswa
 exports.register = (req, res) => {
+    if(!req.body.nim || !req.body.nama || !req.body.programStudiId || !req.body.kelasId || !req.body.noTelepon) {
+        res.status(400).send({
+            statusCode : 400,
+            message: "Kolom Tidak Boleh Kosong!"
+        });
+        return;
+    }
+
     //Save User To Database
     UserMahasiswa.create({
         nim : req.body.nim,
@@ -141,8 +149,8 @@ exports.login = (req, res) => {
             { id: data.id },
             auth_config.secret,
             {
-              algorithm: 'HS256',
-              allowInsecureKeySizes: true,
+                algorithm: 'HS256',
+                allowInsecureKeySizes: true,
               expiresIn: 86400, // 24 hours
             }
         );
@@ -242,112 +250,106 @@ exports.findAllMyProfile = (req, res) => {
 //Proses GET Data Mahasiswa - GET My Profile By Id
 exports.findOneMyProfileById = (req, res) => {
     const id = req.params.id;
-  
+
     UserMahasiswa.findByPk(id, { include: ["programStudi", "kelas"] })
-      .then(data => {
-        if (data) {
-          res.status(200).send({
-            statusCode : 200,
-            message: "Succes Get My Profile By Id",
-            data: {
-                id: data.id,
-                nim: data.nim,
-                nama: data.nama,
-                programStudi: {
-                    id : data.programStudi.id,
-                    kodeProdi : data.programStudi.kodeProdi,
-                    programStudi : data.programStudi.programStudi
-                },
-                kelas: {
-                    id : data.kelas.id,
-                    kodeKelas : data.kelas.kodeKelas,
-                    kelas : data.kelas.kelas
-                },                          
-                noTelepon: data.noTelepon,
-                image: data.image
-                
+        .then(data => {
+            if (data) {
+                res.status(200).send({
+                    statusCode : 200,
+                    message: "Succes Get My Profile By Id",
+                    data: {
+                        id: data.id,
+                        nim: data.nim,
+                        nama: data.nama,
+                        programStudi: {
+                            id : data.programStudi.id,
+                            kodeProdi : data.programStudi.kodeProdi,
+                            programStudi : data.programStudi.programStudi
+                        },
+                        kelas: {
+                            id : data.kelas.id,
+                            kodeKelas : data.kelas.kodeKelas,
+                            kelas : data.kelas.kelas
+                        },                          
+                        noTelepon: data.noTelepon,
+                        image: data.image
+                    }
+                })
+            } else {
+                res.status(404).send({
+                    statusCode : 404,
+                    message: `Cannot find My Profile with id=${id}.`
+                });
             }
-          })
-        } else {
-          res.status(404).send({
-            statusCode : 404,
-            message: `Cannot find My Profile with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-            statusCode : 500,
-            message: "Error retrieving My Profile with id=" + id
+        })
+        .catch(err => {
+            res.status(500).send({
+                statusCode : 500,
+                message: "Error retrieving My Profile with id=" + id
+            });
         });
-      });
 };
 
 
 //Proses Edit Profile - PUT data Edit Profil
-exports.editProfil = (req, res) => {
+exports.editProfil = async (req, res) => {
     UserMahasiswa.update(req.body, {
         where: {
             id: req.params.id
         }
     })
-    .then(result => {
+    try {
+        const result = await db.userMahasiswa.update(req.body, {
+            where: { id: req.params.id }
+        });
+        
         if (result[0]) {
-            UserMahasiswa.findByPk(req.params.id, {
-                include: [
-                    {
-                        model: ProgramStudi,
-                        as: "programStudi"
-                    },
-                    {
-                        model: Kelas,
-                        as: "kelas"
-                    }
-                ]
-            })
-            .then(mahasiswa => {
-                const formattedData = {
-                    id: mahasiswa.id,
-                    nim: mahasiswa.nim,
-                    nama: mahasiswa.nama,
-                    programStudi: {
-                        id: mahasiswa.programStudi.id,
-                        kodeProdi: mahasiswa.programStudi.kodeProdi,
-                        programStudi: mahasiswa.programStudi.programStudi
-                    },
-                    kelas: {
-                        id: mahasiswa.kelas.id,
-                        kodeKelas: mahasiswa.kelas.kodeKelas,
-                        kelas: mahasiswa.kelas.kelas
-                    },
-                    noTelepon: mahasiswa.noTelepon
-                };
-
-                res.status(200).send({
-                    statusCode : 200,
-                    message: "Profile Update Successful",
-                    data: formattedData
-                });
-            })
-            .catch(err => {
-                res.status(500).send({
-                    statusCode : 500,
-                    message: err.message || "Some error occurred while retrieving the User."
-                });
+            const userMahasiswa = await db.userMahasiswa.findByPk(req.params.id, {
+                include: ["programStudi", "kelas"]
             });
+        
+            if (!userMahasiswa) {
+                return res.status(404).send({
+                    statusCode: 404,
+                    essage: `Cannot find USer with id=${req.params.id}.`
+                });
+            }
+
+            const formattedData = {
+                id: userMahasiswa.id,
+                nim: userMahasiswa.nim,
+                nama: userMahasiswa.nama,
+                programStudi: {
+                    id: userMahasiswa.programStudi.id,
+                    kodeProdi: userMahasiswa.programStudi.kodeProdi,
+                    programStudi: userMahasiswa.programStudi.programStudi
+                },
+                kelas: {
+                    id: userMahasiswa.kelas.id,
+                    kodeKelas: userMahasiswa.kelas.kodeKelas,
+                    kelas: userMahasiswa.kelas.kelas
+                },
+                noTelepon : userMahasiswa.noTelepon
+            };
+
+            res.status(200).send({
+                statusCode: 200,
+                message: "User Update Successful",
+                data: formattedData
+            });
+
         } else {
             res.status(404).send({
-                statusCode : 404,
-                message: `Cannot update profile with id=${req.params.id}. Maybe profile was not found or req.body is empty!`
+                statusCode: 404,
+                message: `Cannot update User with id=${req.params.id}. Maybe User was not found or req.body is empty!`
             });
         }
-    })
-    .catch(err => {
+    } catch (err) {
         res.status(500).send({
             statusCode : 500,
             message: err.message || "Some error occurred while updating the User."
         });
-    });
+    };
 }
 
 
@@ -411,3 +413,4 @@ exports.changePassword = (req, res) => {
             });
         });
 };
+

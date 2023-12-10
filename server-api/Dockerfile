@@ -2,9 +2,10 @@ FROM node:20
 
 WORKDIR /server-api
 COPY package.json ./
+COPY package-lock.json ./
+COPY ./ ./
 RUN npm install
-COPY . .
-EXPOSE 8080
-CMD ["npm", "start"]
+# EXPOSE 8080
+CMD ["npm", "start", "run"]
 #CMD ["node", "server.js"]
 

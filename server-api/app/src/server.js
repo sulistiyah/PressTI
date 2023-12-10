@@ -49,6 +49,7 @@ db.sequelizeDatabase.sync()
     require("../routes/auth_mahasiswa_route.js")(app)
     require("../routes/auth_dosen_route.js")(app)
     require("../routes/set_presensi_route.js")(app)
+    // require("../routes/rekapitulasi_route.js")(app)
     require("../routes/face_route.js")(app)
 
     require("../routes/web.js")(app)

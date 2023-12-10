@@ -28,6 +28,7 @@ db.matkul = require("./mata_kuliah_model.js")(sequelizeDB, Sequelize)
 db.userMahasiswa = require("./mahasiswa_model.js")(sequelizeDB, Sequelize)
 db.userDosen = require("./dosen_model.js")(sequelizeDB, Sequelize)
 db.setPresensi = require("./set_presensi_model.js")(sequelizeDB, Sequelize)
+db.kehadiran = require("./kehadiran_model.js")(sequelizeDB, Sequelize)
 db.face = require("./face_model.js")(sequelizeDB, Sequelize)
 
 db.images = require("./image_model.js")(sequelizeDB, Sequelize)
@@ -60,7 +61,6 @@ db.matkul.belongsTo(db.kelas, {
 
 
 //Menyambungkan foreign key prodi dan kelas ke user mahasiswa
-// db.programStudi.hasMany(db.userMahasiswa, {as : "userMahasiswa"})
 db.userMahasiswa.belongsTo(db.programStudi, {
   foreignKey : "programStudiId",
   as: "programStudi",
@@ -71,6 +71,8 @@ db.userMahasiswa.belongsTo(db.kelas, {
   as: "kelas",
 })
 
+
+//Menyambungkan Foreign Key program studi ke set presensi
 db.programStudi.hasMany(db.setPresensi, {
   foreignKey : "programStudiId",
   as : "setPresensi"
@@ -80,6 +82,8 @@ db.setPresensi.belongsTo(db.programStudi, {
   as : "programStudi"
 })
 
+
+//Menyambungkan Foreign Key Kelas ke set presensi
 db.kelas.hasMany(db.setPresensi, {
   foreignKey : "kelasId",
   as : "setPresensi"
@@ -89,7 +93,7 @@ db.setPresensi.belongsTo(db.kelas, {
   as : "kelas"
 })
 
-
+//Menyambungkan Foreign Key mataKuliah ke set presensi
 db.matkul.hasMany(db.setPresensi, {
   foreignKey : "mataKuliahId",
   as : "setPresensi"
@@ -97,6 +101,28 @@ db.matkul.hasMany(db.setPresensi, {
 db.setPresensi.belongsTo(db.matkul, {
   foreignKey : "mataKuliahId",
   as : "mataKuliah"
+})
+
+
+//Menyambungkan Foreign Key user mahasiswa ke Rekapitulasi presensi atau kehadiran
+db.userMahasiswa.hasMany(db.kehadiran, {
+  foreignKey : "userMahasiswaId",
+  as : "kehadiran"
+})
+db.kehadiran.belongsTo(db.userMahasiswa, {
+  foreignKey : "userMahasiswaId",
+  as: "userMahasiswa"
+})
+
+
+//menyambungkan foreign key set presensi ke rekapitulasi/kehadiran
+db.setPresensi.hasMany(db.kehadiran, {
+  foreignKey : "setPresensiId",
+  as : "kehadiran"
+})
+db.kehadiran.belongsTo(db.setPresensi, {
+  foreignKey : "setPresensiId",
+  as: "setPresensi"
 })
 
 

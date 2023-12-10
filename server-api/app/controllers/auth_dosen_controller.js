@@ -8,51 +8,53 @@ const bcrypt = require("bcryptjs")
 
 //Proses Register Dosen
 exports.register = (req, res) => {
-    //Save User To Database
-    const hashedPassword = bcrypt.hashSync(req.body.password, 8);
-    const hashedRePassword = bcrypt.hashSync(req.body.rePassword, 8);
-    UserDosen.create({
-        nip : req.body.nip,
-        nama : req.body.nama,
-        email : req.body.email,
-        noTelepon : req.body.noTelepon,
-        password : hashedPassword,
-        rePassword : hashedRePassword
-        // password : bcrypt.hashSync(req.body.password, 8),
-        // rePassword : bcrypt.hashSync(req.body.rePassword, 8 )
-    })
-    .then(data => {
-        if (!req.body.nip || !req.body.nama || !req.body.email || !req.body.noTelepon || !req.body.password || !req.body.rePassword) {
-            // console.log("Failed Register: Incomplete data provided");
-            return res.status(400).send({
-                statusCode : 400,
-                message: "Incomplete data provided. Please fill in all required fields."
-            });
-        } else {
-            // console.log("Received registration request:", req.body);
-            // console.log("Registration Successful:", data);
-            res.status(200).send({
-                statusCode : 200,
-                message: "Registration Successful",
-                data: {
-                    id: data.id,
-                    nip: data.nip,
-                    nama: data.nama,
-                    email : data.email,                            
-                    noTelepon: data.noTelepon,
-                    password: data.password,
-                    rePassword: data.rePassword
-                }
-            })
-        }
-    })
-    .catch(err => {
-        res.status(500).send({
-            statusCode : 500,
-            message: "Failed to register user. Please try again later.",
-            error: err.message || "Some error occurred while creating the User."
+    if(!req.body.nip || !req.body.nama || !req.body.email || !req.body.noTelepon) {
+        res.status(400).send({
+            statusCode : 400,
+            message: "Kolom Tidak Boleh Kosong!"
         });
-    });
+        return;
+    }
+        //Save User To Database
+        const hashedPassword = bcrypt.hashSync(req.body.password, 8);
+        const hashedRePassword = bcrypt.hashSync(req.body.rePassword, 8);
+        UserDosen.create({
+            nip : req.body.nip,
+            nama : req.body.nama,
+            email : req.body.email,
+            noTelepon : req.body.noTelepon,
+            password : hashedPassword,
+            rePassword : hashedRePassword
+        })
+        .then(data => {
+            if (!req.body.nip || !req.body.nama || !req.body.email || !req.body.noTelepon) {
+                return res.status(400).send({
+                    statusCode : 400,
+                    message: "Incomplete data provided. Please fill in all required fields."
+                });
+            } else {
+                res.status(200).send({
+                    statusCode : 200,
+                    message: "Create User Dosen Successful",
+                    data: {
+                        id: data.id,
+                        nip: data.nip,
+                        nama: data.nama,
+                        email : data.email,                            
+                        noTelepon: data.noTelepon,
+                        password: data.password,
+                        rePassword: data.rePassword
+                    }
+                })
+            }
+        })
+        .catch(err => {
+            res.status(500).send({
+                statusCode : 500,
+                message: "Failed to create user. Please try again later.",
+                error: err.message || "Some error occurred while creating the User."
+            });
+        });
 }
 
 
@@ -88,8 +90,8 @@ exports.login = (req, res) => {
             { id: data.id },
             auth_config.secret,
             {
-              algorithm: 'HS256',
-              allowInsecureKeySizes: true,
+                algorithm: 'HS256',
+                allowInsecureKeySizes: true,
               expiresIn: 86400, // 24 hours
             }
         );
@@ -155,79 +157,45 @@ exports.findAllMyProfile = (req, res) => {
 exports.findOneMyProfileById = (req, res) => {
     const id = req.params.id;
     UserDosen.findByPk( id )
-      .then(data => {
-        if (data) {
-          res.status(200).send({
-            statusCode : 200,
-            message: "Succes Get Data Dosen By Id",
-            data: {
-                id: data.id,
-                nip: data.nip,
-                nama: data.nama,
-                email: data.email,                   
-                noTelepon: data.noTelepon,
-                image: data.image
-                
+        .then(data => {
+            if (data) {
+            res.status(200).send({
+                statusCode : 200,
+                message: "Succes Get Data Dosen By Id",
+                data: {
+                    id: data.id,
+                    nip: data.nip,
+                    nama: data.nama,
+                    email: data.email,                   
+                    noTelepon: data.noTelepon,
+                    image: data.image
+                    
+                }
+            })
+            } else {
+            res.status(404).send({
+                statusCode : 404,
+                message: `Cannot find Dosen with id=${id}.`
+            });
             }
-          })
-        } else {
-          res.status(404).send({
-            statusCode : 404,
-            message: `Cannot find Dosen with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-            statusCode : 500,
-          message: "Error retrieving Dosen with id=" + id
+        })
+        .catch(err => {
+            res.status(500).send({
+                statusCode : 500,
+            message: "Error retrieving Dosen with id=" + id
+            });
         });
-      });
 };
-
-exports.findOneById = (req, res) => {
-    const id = req.query.id
-    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
-
-    UserDosen.findAll(  { where : condition } )
-      .then(data => {
-        if (data) {
-          res.status(200).send({
-            statusCode : 200,
-            message: "Succes Get Data Dosen By Id",
-            data: {
-                id: data.id,
-                nip: data.nip,
-                nama: data.nama,
-                email: data.email,                   
-                noTelepon: data.noTelepon,
-                image: data.image
-                
-            }
-          })
-        } else {
-          res.status(404).send({
-            statusCode : 404,
-            message: `Cannot find Dosen with id=${id}.`
-          });
-        }
-      })
-      .catch(err => {
-        res.status(500).send({
-            statusCode : 500,
-          message: "Error retrieving Dosen with id=" + id
-        });
-      });
-};
-
-
 
 //Proses Edit Profile - PUT data Edit Profil
 exports.editProfil = (req, res) => {
-    const id = req.query.id
-    const condition = id? { id : { [Op.like]: `%${id}%` } } : null
+    const id = req.params.id;
 
-    UserDosen.update(req.body,  { where : condition })
+    UserDosen.update(req.body, {
+        where: {
+            id: id
+        }
+    })
     .then(() => {
         // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
         return UserDosen.findByPk(id);
@@ -242,7 +210,7 @@ exports.editProfil = (req, res) => {
 
         res.status(200).send({
             statusCode : 200,
-            message: "Update Profile Berhasil",
+            message: "Update Data User Dosen Succesfull",
             data: {
                 id: updatedData.id,
                 nip: updatedData.nip,
@@ -322,62 +290,3 @@ exports.changePassword = (req, res) => {
             });
         });
 };
-
-exports.createCoba = (req, res) => {
-    const payload = req.body
-
-    UserDosen.create(payload)
-    .then((data) => {
-        res.json({
-            data
-        })
-    })
-    .catch((error) => {
-        res.json({
-            message : error.message
-        })
-    })
-}
-
-exports.updateCoba = (req, res) => {
-    const payload = req.body
-    const id = req.params.id
-
-    UserDosen.update( payload, {
-        where : {
-            id : id
-        }
-    })
-    .then((data) => {
-        res.json({
-            data:data
-        })
-    })
-    // .then(payload => {
-    //     if (payload) {
-    //       res.status(200).send({
-    //         statusCode : 200,
-    //         message: "Succes Update",
-    //         data: {
-    //             id: payload.id,
-    //             nip: payload.nip,
-    //             nama: payload.nama,
-    //             email: payload.email,                   
-    //             noTelepon: payload.noTelepon,
-    //             image: payload.image
-                
-    //         }
-    //       })
-    //     } else {
-    //       res.status(404).send({
-    //         statusCode : 404,
-    //         message: `Cannot find Dosen with id=${id}.`
-    //       });
-    //     }
-    //   })
-    .catch((error) => {
-        res.json({
-            message : error.message
-        })
-    })
-}

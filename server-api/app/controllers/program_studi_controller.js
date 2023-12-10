@@ -1,9 +1,17 @@
 const db = require("../models")
 const ProgramStudi = db.programStudi
-const Kelas = db.kelas
 const Op = db.Sequelize.Op
 
 exports.createProdi = (req, res) => {
+    //Validasi request
+    if(!req.body.kodeProdi || !req.body.programStudi) {
+      res.status(400).send({
+        statusCode : 400,
+        message: "Kolom Tidak Boleh Kosong!"
+      });
+      return;
+    }
+
   //membuat data program studi
   const program_studi = {
     kodeProdi: req.body.kodeProdi,
@@ -78,6 +86,16 @@ exports.findOne = (req, res) => {
 
 //Update/Edit data program studi dengan parameter id
 exports.update = (req, res) => {
+
+  //Validasi request
+  if(!req.body.kodeProdi || !req.body.programStudi) {
+    res.status(400).send({
+      statusCode : 400,
+      message: "Kolom Tidak Boleh Kosong!"
+    });
+    return;
+  }
+
   ProgramStudi.update(req.body, {
       where: { id: req.params.id }
   })
@@ -142,41 +160,6 @@ exports.delete = (req, res) => {
       res.status(500).send({
         statusCode : 500,
         message: "Could not delete Program Study with id=" + id
-      });
-    });
-};
-
-//membuatd dan menyimpan data kelas ke database
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.kelas) {
-    res.status(400).send({
-      statusCode : 400,
-      message: "Content can not be empty!"
-    });
-    return;
-  }
-
-  //membuat data kelas
-  const kelas = {
-    kodeKelas: req.body.kodeKelas,
-    kelas: req.body.kelas
-  };
-
-  //menyimpan data kelas kedalam database
-  Kelas.create(kelas)
-    .then(data => {
-      res.status(200).send({
-        statusCode : 200,
-        message : "Success Create Data Class",
-        data : data
-      });
-    })
-    .catch(err => {
-      res.status(500).send({
-      statusCode : 500,
-      message:
-         err.message || "Some error occurred while creating the Class."
       });
     });
 };

@@ -38,17 +38,12 @@ module.exports = app => {
                 [ authJwtDosen.verifikasiTokenDosen ], 
                 controllerUser.findOneMyProfileById)
 
-
-                router.get(   "/profile", 
-                [ authJwtDosen.verifikasiTokenDosen ], 
-                controllerUser.findOneById)
-
   //PUT My Profile By Id (Edit Profil) - Data dosen
   router.put(   "/my_profile/:id",
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
-                router.put(   "/my_profile",
+  router.put(   "/my_profile",
                 [ authJwtDosen.verifikasiTokenDosen ],
                 controllerUser.editProfil) 
 
@@ -56,13 +51,6 @@ module.exports = app => {
   router.put( "/change_password/:id",
               [ authJwtDosen.verifikasiTokenDosen ],
               controllerUser.changePassword)
-
-  
-  router.post("/create_coba", controllerUser.createCoba)    
-  
-  router.put("/create_coba/:id", controllerUser.updateCoba)
-
-
 
 //////////////////////////////////////////////////////////////////////PROGRAM STUDI//////////////////////////////////////////////////
   //GET Data Program Studi
