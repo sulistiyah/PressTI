@@ -7,7 +7,7 @@ function Welcome() {
         <div>
             <h1 className='title'>Dasboard</h1>
             <h2 className='subtitle'>
-                Welcome Back <strong>{admin && admin.name}</strong>
+                Welcome Back <strong>{admin && admin.nama}</strong>
             </h2>
         </div>
     )

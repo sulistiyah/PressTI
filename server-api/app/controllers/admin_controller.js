@@ -1180,29 +1180,28 @@ exports.findOneUserDosen = (req, res) => {
 
 
 //Proses Edit User Dosen- PUT data Edit User Dosen
-exports.updateUserDosen = (req, res) => {
+exports.updateUserDosen = async (req, res) => {
     const id = req.params.id;
 
-    UserDosen.update(req.body, {
-        where: {
-            id: id
-        }
-    })
-    .then(() => {
-        // Setelah update, dapatkan data terbaru dengan menggunakan findByPk
-        return UserDosen.findByPk(id);
-    })
-    .then(updatedData => {
+    try {
+        await UserDosen.update(req.body, {
+            where: {
+                id: id
+            }
+        });
+
+        const updatedData = await UserDosen.findByPk(id);
+
         if (!updatedData) {
             return res.status(404).send({
-                statusCode : 404,
+                statusCode: 404,
                 message: `User with id=${id} not found after update.`
             });
         }
 
         res.status(200).send({
-            statusCode : 200,
-            message: "Update Data User Dosen Succesfull",
+            statusCode: 200,
+            message: "Update Data User Dosen Successful",
             data: {
                 id: updatedData.id,
                 nip: updatedData.nip,
@@ -1211,13 +1210,12 @@ exports.updateUserDosen = (req, res) => {
                 noTelepon: updatedData.noTelepon
             }
         });
-    })
-    .catch(err => {
+    } catch (err) {
         res.status(500).send({
-            statusCode : 500,
+            statusCode: 500,
             message: err.message || "Some error occurred while updating the User."
         });
-    });
+    }
 }
 
 

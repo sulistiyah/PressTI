@@ -7,8 +7,8 @@ services:
     restart: unless-stopped
     env_file: ./.env
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQLDB_ROOT_PASSWORD}
-      - MYSQL_DATABASE=${MYSQLDB_DATABASE}
+      - MYSQL_ROOT_PASSWORD=$MYSQLDB_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQLDB_DATABASE
     ports:
       - 3307:3306
     volumes:
@@ -47,8 +47,6 @@ services:
     build:
       context: ./server-ui
       dockerfile: Dockerfile
-      args:
-        - REACT_APP_API_BASE_URL=$CLIENT_API_BASE_URL
     ports:
       - 3000:3000
     volumes:
@@ -61,8 +59,6 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
       - server-api
       - server-ui
