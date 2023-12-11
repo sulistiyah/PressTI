@@ -11,14 +11,14 @@ global.__basedir = __dirname;
 const app = express()
 dotenv.config()
 
-var corsOptions = {
-    origin: "http://localhost:3000",
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true,    
-    optionsSuccessStatus: 204,
-}
+// var corsOptions = {
+//     origin: "http://localhost:3000",
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     credentials: true,    
+//     optionsSuccessStatus: 204,
+// }
 
-app.use(cors(corsOptions))
+app.use(cors())
 app.use(morgan('dev'))
 // app.use(middlewareLogRequest)
 app.use(express.json())
