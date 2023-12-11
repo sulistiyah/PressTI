@@ -40,7 +40,7 @@ export const getMe = createAsyncThunk("api/admin/getMe", async(_, thunkAPI) => {
 });
 
 export const LogOut = createAsyncThunk("api/admin/LogOut", async() => {
-    await axios.delete('http://52.45.248.226:8080/api/admin/logout');
+    await axios.delete('http://localhost:8080/api/admin/logout');
 });
 
 export const authSlice = createSlice({
