@@ -34,7 +34,7 @@ function FormAddKelas() {
     const saveKelas = async(e) => {
         e.preventDefault()
         try {
-            await axios.post('http://http://34.192.213.125:8080/api/admin/kelas/create', {
+            await axios.post('http://34.192.213.125:8080/api/admin/kelas/create', {
                 kodeKelas : kodeKelas,
                 kelas : kelas,
                 programStudiId : programStudiId
