@@ -3,6 +3,7 @@ const dotenv = require('dotenv')
 const cors = require('cors')
 const morgan = require('morgan')
 const middlewareLogRequest = require('../middleware/logs.js')
+const db = require("../models/index.js")
 
 
 global.__basedir = __dirname;
@@ -30,21 +31,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/", (req, res) => {
-    res.json({
-        message: "Welcome to PressTI Application"
-    })
-})
-
-const db = require("../models/index.js")
-db.sequelizeDatabase.sync()
-    .then(() => {
-        console.log("Synced Database")
-    })
-    .catch((err) => {
-        console.log("Failed to sync Database: " + err.message)
-    })
-
     //Pemanggilan masing-masing route
     require("../routes/admin_route.js")(app)
     require("../routes/program_studi_route.js")(app)
@@ -58,8 +44,24 @@ db.sequelizeDatabase.sync()
 
     require("../routes/web.js")(app)
 
+app.get("/", (req, res) => {
+    res.json({
+        message: "Welcome to PressTI Application"
+    })
+})
 
 const PORT = process.env.NODE_DOCKER_PORT || 8080
 app.listen(PORT, () => {
     console.log(`Server is Running on port : ${PORT}`)
 })
+
+
+db.sequelizeDatabase.sync()
+    .then(() => {
+        console.log("Synced Database")
+    })
+    .catch((err) => {
+        console.log("Failed to sync Database: " + err.message)
+    })
+
+

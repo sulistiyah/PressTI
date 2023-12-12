@@ -15,8 +15,6 @@ export const LoginAdmin = createAsyncThunk("api/admin/login", async(data, thunkA
         const response = await axios.post('http://34.192.213.125:8080/api/admin/login', {
             email: data.email,
             password: data.password
-        }, {
-            withCredentials: true
         });
         // console.log(response.data)
         return response.data;
@@ -31,9 +29,7 @@ export const LoginAdmin = createAsyncThunk("api/admin/login", async(data, thunkA
 
 export const getMe = createAsyncThunk("api/admin/getMe", async(_, thunkAPI) => {
     try {
-        const response = await axios.get('http://34.192.213.125:8080/api/admin/my_admin', {
-            withCredentials: true
-        });
+        const response = await axios.get('http://34.192.213.125:8080/api/admin/my_admin');
         return response.data;
     } catch (error) {
         if(error.response){
