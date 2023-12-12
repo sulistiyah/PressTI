@@ -14,10 +14,9 @@ function ProgramStudiList() {
 
     const getProgramStudi = async () => {
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/admin/program_studi`);
+            const response = await axios.get(`http://34.192.213.125:8080/api/admin/program_studi`);
             console.log('Response:', response.data); // Tambahkan log ini
             setProgramStudi(response.data.data || []);
-            console.log('API_BASE_URL:', API_BASE_URL)
         } catch (error) {
             console.error('Error fetching program studi:', error);
         }
@@ -26,7 +25,7 @@ function ProgramStudiList() {
     const deleteProgramStudi = async (programStudiId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this data?");
         if(confirmDelete) {
-            await axios.delete(`${API_BASE_URL}/api/admin/program_studi/delete/${programStudiId}`)
+            await axios.delete(`http://34.192.213.125:8080/api/admin/program_studi/delete/${programStudiId}`)
             getProgramStudi()
         }
     }
