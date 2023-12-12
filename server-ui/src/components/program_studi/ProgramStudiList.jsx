@@ -25,7 +25,7 @@ function ProgramStudiList() {
     const deleteProgramStudi = async (programStudiId) => {
         const confirmDelete = window.confirm("Are you sure you want to delete this data?");
         if(confirmDelete) {
-            await axios.delete(`http://34.192.213.125:8080/api/admin/program_studi/delete/${programStudiId}`)
+            await axios.delete(`${API_BASE_URL}/api/admin/program_studi/delete/${programStudiId}`)
             getProgramStudi()
         }
     }
