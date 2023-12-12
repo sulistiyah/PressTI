@@ -2,8 +2,8 @@ const express = require('express')
 const dotenv = require('dotenv')
 const cors = require('cors')
 const morgan = require('morgan')
-// const middlewareLogRequest = require('../middleware/logs.js')
-const bodyParser = require('body-parser')
+const middlewareLogRequest = require('../middleware/logs.js')
+
 
 global.__basedir = __dirname;
 
@@ -11,20 +11,20 @@ global.__basedir = __dirname;
 const app = express()
 dotenv.config()
 
-// var corsOptions = {
-//     origin: "http://localhost:3000",
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     credentials: true,    
-//     optionsSuccessStatus: 204,
-// }
 
 app.use(cors())
 app.use(morgan('dev'))
-// app.use(middlewareLogRequest)
+app.use(middlewareLogRequest)
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }));
-// app.use(bodyParser.json())
-// app.use(bodyParser.urlencoded({ extended : true}))
+
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', 'http://34.192.213.125:3000');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 
 app.get("/", (req, res) => {
     res.json({
