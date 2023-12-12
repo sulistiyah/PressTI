@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom'
 import axios from "axios"
+import API_BASE_URL from '../../config'
 
 function ProgramStudiList() {
 
@@ -13,7 +14,7 @@ function ProgramStudiList() {
 
     const getProgramStudi = async () => {
         try {
-            const response = await axios.get('http://34.192.213.125:8080/api/admin/program_studi');
+            const response = await axios.get(`${API_BASE_URL}/api/admin/program_studi`);
             console.log('Response:', response.data); // Tambahkan log ini
             setProgramStudi(response.data.data || []);
         } catch (error) {
