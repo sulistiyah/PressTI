@@ -52,7 +52,8 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.NODE_DOCKER_PORT || 8080
 app.listen(PORT, () => {
-    console.log(`Server is Running on port : ${PORT}`)
+    const ip = "34.192.213.125"
+    console.log(`Server is Running on http://${ip}: ${PORT}`)
 })
 
 
