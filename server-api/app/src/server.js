@@ -51,10 +51,9 @@ app.get("/", (req, res) => {
 })
 
 
-const IP = process.env.CLIENT_ORIGIN || "http://34.192.213.125"
-const PORT = process.env.NODE_DOCKER_PORT || 8080
-app.listen(IP,PORT, () => {
-    console.log(`Server is Running on http://${IP}: ${PORT}`)
+const IP = process.env.CLIENT_ORIGIN || "http://34.192.213.125:8080"
+app.listen(IP, () => {
+    console.log(`Server is Running on : ${IP}`)
 })
 
 
