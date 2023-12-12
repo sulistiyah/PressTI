@@ -30,7 +30,7 @@ services:
     volumes:
       - ./server-api:/usr/src/app
     environment:
-      - DB_HOST=mysqldb
+      - DB_HOST=mysqldb-container
       - DB_USER=$MYSQLDB_USER
       - DB_PASSWORD=$MYSQLDB_ROOT_PASSWORD
       - DB_NAME=$MYSQLDB_DATABASE
