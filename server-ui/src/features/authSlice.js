@@ -16,13 +16,7 @@ export const LoginAdmin = createAsyncThunk("api/admin/login", async(data, thunkA
             email: data.email,
             password: data.password
         }, {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': 'http://34.192.213.125:3000',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            }
+            withCredentials: true
         });
         // console.log(response.data)
         return response.data;
@@ -38,13 +32,7 @@ export const LoginAdmin = createAsyncThunk("api/admin/login", async(data, thunkA
 export const getMe = createAsyncThunk("api/admin/getMe", async(_, thunkAPI) => {
     try {
         const response = await axios.get('http://34.192.213.125:8080/api/admin/my_admin', {
-            withCredentials: true,
-            headers: {
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Origin': 'http://34.192.213.125:3000',
-                'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-                'Access-Control-Allow-Headers': 'Content-Type',
-            }
+            withCredentials: true
         });
         return response.data;
     } catch (error) {
@@ -57,13 +45,7 @@ export const getMe = createAsyncThunk("api/admin/getMe", async(_, thunkAPI) => {
 
 export const LogOut = createAsyncThunk("api/admin/LogOut", async() => {
     await axios.delete('http://34.192.213.125:8080/api/admin/logout', {
-        withCredentials: true,
-        headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': 'http://34.192.213.125:3000',
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        }
+        withCredentials: true
     });
 });
 
