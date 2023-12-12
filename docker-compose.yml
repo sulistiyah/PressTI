@@ -20,7 +20,7 @@ services:
     container_name: server-api-container
     depends_on:
       - mysqldb
-    build: 
+    build:
       context: ./server-api
       dockerfile: Dockerfile
     restart: unless-stopped
@@ -52,7 +52,7 @@ services:
     volumes:
       - ./server-api:/usr/src/app
     networks:
-      - frontend  
+      - frontend
 
 
   nginx:
@@ -62,8 +62,15 @@ services:
     depends_on:
       - server-api
       - server-ui
+    volumes:
+      - ./pressti.conf:etc/nginx/pressti.conf
+      - ./sites-available:/etc/nginx/sites-available
+      - ./sites-enabled:/etc/nginx/sites-enabled
+    networks:
+      - backend
+      - frontend
 
-volumes: 
+volumes:
   db:
 
 networks:
