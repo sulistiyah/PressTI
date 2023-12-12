@@ -20,7 +20,7 @@ services:
     container_name: server-api-container
     depends_on:
       - mysqldb
-    build: 
+    build:
       context: ./server-api
       dockerfile: Dockerfile
     restart: unless-stopped
@@ -52,7 +52,7 @@ services:
     volumes:
       - ./server-api:/usr/src/app
     networks:
-      - frontend  
+      - frontend
 
 
   nginx:
@@ -70,8 +70,7 @@ services:
       - backend
       - frontend
 
-
-volumes: 
+volumes:
   db:
 
 networks:
