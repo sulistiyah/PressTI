@@ -19,41 +19,38 @@ async function loadModels() {
 exports.detectFace = async (req, res) => {
   try{
     // Determine the image type based on the file's MIME type
-  let imageType;
-  let buffer;
+    let imageType;
+    let buffer;
 
-  if(req.file) {
-    buffer = req.file.buffer;
-    imageType = req.file.mimetype
-  } else {
-    return res.status(400).json({
-      statusCode : 400,
-      success : false,
-      error :' Image file not provided'
-    })
-  }
-  
+    if(req.file) {
+      buffer = req.file.buffer;
+      imageType = req.file.mimetype
+    } else {
+      return res.status(400).send({
+        statusCode : 400,
+        success : false,
+        error :' Image file not provided'
+      })
+    }
+    
 
-  // Additional console log to display information about the image buffer
-  console.log('Buffer Information:', {
-    size: buffer ? buffer.length : "undefiend",
-    type: req.file.mimetype,
-  });
+    // Additional console log to display information about the image buffer
+    console.log('Buffer Information:', {
+      size: buffer ? buffer.length : "undefiend",
+      type: req.file.mimetype,
+    });
 
-  //lakukan face detection pada gambar 
-  // const buffer = req.file.buffer
-  // const image = await loadImage(buffer);
-  // const blob = new Blob([buffer], { type: imageType })
-  // const image = await faceapi.bufferToImage(buffer);
+    //lakukan face detection pada gambar 
+    // const buffer = req.file.buffer
+    // const image = await loadImage(buffer);
+    // const blob = new Blob([buffer], { type: imageType })
+    // const image = await faceapi.bufferToImage(buffer);
 
-   // Additional console log to display information about the image
-  console.log('Image Information:', {
-    size : buffer.length,
-    type : imageType,
-    // width: image.width,
-    // height: image.height,
-    // type: image.type,
-  });
+    // Additional console log to display information about the image
+    console.log('Image Information:', {
+      size : buffer.length,
+      type : imageType
+    });
 
     //Load models
     await loadModels()
@@ -68,7 +65,7 @@ exports.detectFace = async (req, res) => {
       image: buffer,
       width: image.buffer,
       height: image.height,
-     });
+    });
     console.log('Face created:', face);
 
     res.status(200).send({
@@ -88,22 +85,6 @@ exports.detectFace = async (req, res) => {
     });
   }
 }
-
-
-// switch (req.file.mimetype) {
-  //   case 'image/jpeg':
-  //     imageType = 'image/jpeg';
-  //     break;
-  //   case 'image/png':
-  //     imageType = 'image/png';
-  //     break;
-  //   // Add more cases for other supported image types if needed
-  //   default:
-  //     return res.status(400).json({
-  //       success: false,
-  //       error: 'Unsupported image type'
-  //     });
-  // }
 
 
 // exports.detectFace = async (req, res) => {
