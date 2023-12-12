@@ -26,7 +26,7 @@ function FormAddProgramStudi() {
             });
         }catch (error) {
             if(error.response) {
-                console.log(error.response.data.message)
+                console.log(error.response.data.message),
                 setMessage(error.response.data.message)
             }
         }
