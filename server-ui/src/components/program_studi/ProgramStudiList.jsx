@@ -17,6 +17,7 @@ function ProgramStudiList() {
             const response = await axios.get(`${API_BASE_URL}/api/admin/program_studi`);
             console.log('Response:', response.data); // Tambahkan log ini
             setProgramStudi(response.data.data || []);
+            console.log('API_BASE_URL:', API_BASE_URL)
         } catch (error) {
             console.error('Error fetching program studi:', error);
         }
