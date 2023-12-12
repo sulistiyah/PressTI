@@ -12,7 +12,7 @@ function FormEditProgramStudi() {
     useEffect(() => {
         const getProgramStudiId = async() => {
             try {
-                const response = await axios.get(`http://localhost:8080/api/admin/program_studi/${id}`)
+                const response = await axios.get(`http://34.192.213.125:8080/api/admin/program_studi/${id}`)
                 setKodeProdi(response.data.data.kodeProdi)
                 setProgramStudi(response.data.data.programStudi)
             }catch (error) {
@@ -28,7 +28,7 @@ function FormEditProgramStudi() {
     const updateProgramStudi = async(e) => {
         e.preventDefault()
         try {
-            await axios.put(`http://localhost:8080/api/admin/program_studi/update/${id}`, {
+            await axios.put(`http://34.192.213.125:8080/api/admin/program_studi/update/${id}`, {
                 kodeProdi : kodeProdi,
                 programStudi : programStudi
                 
