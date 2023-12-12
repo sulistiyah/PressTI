@@ -63,7 +63,7 @@ services:
       - server-api
       - server-ui
     volumes:
-      - ./pressti.conf:etc/nginx/pressti.conf
+      - /home/ubuntu/PressTI/pressti.conf:/etc/nginx/pressti.conf:rw
       - ./sites-available:/etc/nginx/sites-available
       - ./sites-enabled:/etc/nginx/sites-enabled
     networks:
