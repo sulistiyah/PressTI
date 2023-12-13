@@ -17,7 +17,6 @@ function FormEditProgramStudi() {
                 setProgramStudi(response.data.data.programStudi)
             }catch (error) {
                 if(error.response) {
-                    console.log(error.response.data.message)
                     setMessage(error.response.data.message)
                 }
             }
