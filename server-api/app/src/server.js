@@ -14,7 +14,8 @@ dotenv.config()
 
 const corsOptions = {
     origin: 'http://34.192.213.125:3000',
-    credentials: true
+    credentials: true,
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
 }
 
 app.use(cors(corsOptions))
@@ -51,9 +52,10 @@ app.get("/", (req, res) => {
 })
 
 
-const IP = process.env.CLIENT_ORIGIN || "http://34.192.213.125:8080"
-app.listen(IP, () => {
-    console.log(`Server is Running on : ${IP}`)
+// const IP = process.env.CLIENT_ORIGIN || "http://34.192.213.125:8080"
+const PORT = process.env.PORT || 8080
+app.listen(PORT, () => {
+    console.log(`Server is Running on http://34.192.213.125:${PORT}`)
 })
 
 
