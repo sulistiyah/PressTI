@@ -124,13 +124,22 @@ db.setPresensi.belongsTo(db.matkul, {
 //   as: "setPresensi"
 // })
 
+Kehadiran.belongsTo(db.setPresensi, {
+  foreignKey: 'setPresensiId',
+  as: 'setPresensi',  // sesuaikan dengan alias yang digunakan dalam model SetPresensi
+});
+
+Kehadiran.belongsTo(db.userMahasiswa, {
+  foreignKey: 'userMahasiswaId',
+  as: 'userMahasiswa',  // sesuaikan dengan alias yang digunakan dalam model UserMahasiswa
+});
 
 db.setPresensi.belongsToMany(db.userMahasiswa, {
   through: {
     model: Kehadiran,
     unique: false, 
   },
-  as: "userMahasiswaKehadiran",
+  as: "userMahasiswa",
   foreignKey: "setPresensiId",
 });
 db.userMahasiswa.belongsToMany(db.setPresensi, {
@@ -138,7 +147,7 @@ db.userMahasiswa.belongsToMany(db.setPresensi, {
     model: Kehadiran,
     unique: false, 
   },
-  as: "setPresensiKehadiran",
+  as: "setPresensi",
   foreignKey: "userMahasiswaId",
 });
 

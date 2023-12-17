@@ -17,18 +17,83 @@ exports.presensi = (req, res) => {
         statusPresensi : req.body.statusPresensi,
         tanggalPresensi : req.body.tanggalPresensi,
         waktuPresensi : req.body.waktuPresensi
+    },{ 
+        include: ["setPresensi", "userMahasiswa"] 
     })
     .then(data => {
-        res.status(200).send({
-            statusCode: 200,
-            message: "Presensi Successful",
-            data : data
-        });
+        if (!data) {
+            res.status(404).send({
+                statusCode : 404,
+                message: "Failed Rekapitulasi Kehadiran"
+            });
+        } else {
+        // Mencari program studi berdasarkan ID yang diberikan
+            SetPresensi.findByPk(req.body.setPresensiId, {
+                include: ["programStudi", "kelas", "mataKuliah"]
+            })
+                .then(setPresensi => {
+                if (!setPresensi) {
+                    res.status(404).send({
+                        statusCode : 404,
+                        message: "Set Presensi not found"
+                    });
+                } else {
+                    // Mencari kelas berdasarkan ID yang diberikan
+                    UserMahasiswa.findByPk(req.body.userMahasiswaId)
+                    .then(userMahasiswa => {
+                        if (!userMahasiswa) {
+                            res.status(404).send({
+                                statusCode : 404,
+                                message: "User Mahasiswa not found"
+                            });
+                        } else {
+                            res.status(200).send({
+                                statusCode : 200,
+                                message: "Rekapitulasi Kehadiran Successful",
+                                data: {
+                                    id: data.id,
+                                    statusPresensi: data.statusPresensi,
+                                    tanggalPresensi: data.tanggalPresensi,
+                                    waktuPresensi: data.WaktuPresensi,
+                                    setPresensi: {
+                                        id: setPresensi.id,
+                                        tanggalPresensi : setPresensi.tanggalPresensi,
+                                        jamMulai: setPresensi.jamMulai,
+                                        jamBerakhir: setPresensi.jamBerakhir,
+                                        programStudi: setPresensi.programStudi,
+                                        kelas: setPresensi.kelas,
+                                        mataKuliah: setPresensi.mataKuliah
+                                    },
+                                    userMahasiswa : {
+                                        id: userMahasiswa.id,
+                                        nim : userMahasiswa.nim,
+                                        nama : userMahasiswa.nama,
+                                        noTelepon : userMahasiswa.noTelepon
+                                    }
+                                }
+                            });
+                        }
+                    })
+                    .catch(err => {
+                        res.status(500).send({
+                        statusCode : 500,
+                        message: err.message || "Some error occurred while retrieving Kelas."
+                        });
+                    });
+                }
+                })
+                .catch(err => {
+                    res.status(500).send({
+                        statusCode : 500,
+                        message: err.message || "Some error occurred while retrieving Program Studi."
+                    });
+                });
+        }
     })
     .catch(err => {
         res.status(500).send({
-            statusCode: 500,
-            message: err.message || "Some error occurred while creating the presensi."
+        statusCode : 500,
+        message: err.message || "Some error occurred while creating the User."
         });
     });
 }

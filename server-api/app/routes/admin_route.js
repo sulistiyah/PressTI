@@ -45,11 +45,20 @@ module.exports = app => {
     router.delete("/user_dosen/delete/:id", admin.deleteUserDosen)
 
 
-    //USER DOSEN
+    //SET PRESENSI
     router.post("/set_presensi/create", admin.createSetPresensi)
     router.get("/set_presensi", admin.findAllSetPresensi)
     router.get("/set_presensi/:id", admin.findOneSetPresensi)
     router.put("/set_presensi/update/:id", admin.updateSetPresensi)
     router.delete("/set_presensi/delete/:id", admin.deleteSetPresensi)
     
+    
+    //REKAPITULASI PRESENSI
+    router.post("/rekapitulasi_presensi/create", admin.createRekapitulasiPresensi)
+    router.get("/rekapitulasi_presensi", admin.findAllRekapitulasiPresensi)
+    router.get("/rekapitulasi_presensi/:id", admin.findOneSetPresensi)
+    router.put("/rekapitulasi_presensi/update/:id", admin.updateSetPresensi)
+    router.delete("/rekapitulasi_presensi/delete/:id", admin.deleteSetPresensi)
+    
+
 }
