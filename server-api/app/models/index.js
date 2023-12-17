@@ -28,8 +28,8 @@ db.matkul = require("./mata_kuliah_model.js")(sequelizeDB, Sequelize)
 db.userMahasiswa = require("./mahasiswa_model.js")(sequelizeDB, Sequelize)
 db.userDosen = require("./dosen_model.js")(sequelizeDB, Sequelize)
 db.setPresensi = require("./set_presensi_model.js")(sequelizeDB, Sequelize)
-db.kehadiran = require("./kehadiran_model.js")(sequelizeDB, Sequelize)
-db.face = require("./face_model.js")(sequelizeDB, Sequelize)
+const Kehadiran = require("./kehadiran_model.js")(sequelizeDB, Sequelize)
+db.kehadiran = Kehadiran
 
 
 //Menyambungkan foreign key program studi ke kelas
@@ -125,23 +125,22 @@ db.kehadiran.belongsTo(db.setPresensi, {
 })
 
 
-
-db.face.belongsTo(db.userMahasiswa, {
+db.setPresensi.belongsToMany(db.userMahasiswa, {
+  through: {
+    model: Kehadiran,
+    unique: false, 
+  },
+  as: "userMahasiswa",
+  foreignKey: "setPresensiId",
+});
+db.userMahasiswa.belongsToMany(db.setPresensi, {
+  through: {
+    model: Kehadiran,
+    unique: false, 
+  },
+  as: "setPresensi",
   foreignKey: "userMahasiswaId",
-  as : "userMahasiswa"
-})
-
-
-// db.tag.belongsToMany(db.tutorial, {
-//   through: "tutorial_tag",
-//   as: "tutorials",
-//   foreignKey: "tag_id",
-// });
-// db.tutorial.belongsToMany(db.tag, {
-//   through: "tutorial_tag",
-//   as: "tags",
-//   foreignKey: "tutorial_id",
-// });
+});
 
 
 module.exports = db;
