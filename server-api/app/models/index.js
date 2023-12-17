@@ -130,7 +130,7 @@ db.setPresensi.belongsToMany(db.userMahasiswa, {
     model: Kehadiran,
     unique: false, 
   },
-  as: "userMahasiswa",
+  as: "userMahasiswaa",
   foreignKey: "setPresensiId",
 });
 db.userMahasiswa.belongsToMany(db.setPresensi, {
@@ -138,7 +138,7 @@ db.userMahasiswa.belongsToMany(db.setPresensi, {
     model: Kehadiran,
     unique: false, 
   },
-  as: "setPresensi",
+  as: "setPresensii",
   foreignKey: "userMahasiswaId",
 });
 
