@@ -7,10 +7,10 @@ services:
     restart: unless-stopped
     env_file: ./.env
     environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      - MYSQL_USER=$MYSQL_USER
+      - MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - MYSQL_DATABASE=$MYSQL_DATABASE
+      - MYSQL_PASSWORD=$MYSQL_PASSWORD
     ports:
       - "${MYSQL_LOCAL_PORT}:${MYSQL_DOCKER_PORT}"
     volumes:
@@ -32,12 +32,12 @@ services:
     volumes:
       - ./server-api:/usr/src/app
     environment:
-      DB_HOST: mysqldb-container
-      DB_USER: ${MYSQL_USER}
-      DB_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      DB_NAME: ${MYSQL_DATABASE}
-      DB_PORT: ${MYSQL_DOCKER_PORT}
-      CLIENT_ORIGIN: ${CLIENT_ORIGIN}
+      - DB_HOST=mysqldb-container
+      - DB_USER=$MYSQL_USER
+      - DB_PASSWORD=$MYSQL_ROOT_PASSWORD
+      - DB_NAME=$MYSQL_DATABASE
+      - DB_PORT=$MYSQL_DOCKER_PORT
+      - CLIENT_ORIGIN=$CLIENT_ORIGIN
     networks:
       - backend
       - frontend
