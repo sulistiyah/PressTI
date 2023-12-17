@@ -27,7 +27,9 @@ import SetPresensi from "./pages/set_presensi/SetPresensi"
 import AddSetPresensi from "./pages/set_presensi/AddSetPresensi"
 import EditSetPresensi from "./pages/set_presensi/EditSetPresensi"
 
-
+import RekapitulasiPresensi from "./pages/rekapitulasi_presensi/RekapitulasiPresensi"
+import AddRekapitulasiPresensi from "./pages/rekapitulasi_presensi/AddRekapitulasiPresensi"
+import EditRekapitulasiPresensi from "./pages/rekapitulasi_presensi/EditRekapitulasiPresensi"
 
 
 function App() {
@@ -63,6 +65,10 @@ function App() {
           <Route path="/api/admin/set_presensi" element={ <SetPresensi/> } />
           <Route path="/api/admin/set_presensi/create" element={ <AddSetPresensi/> } />
           <Route path="/api/admin/set_presensi/update/:id" element={ <EditSetPresensi/> } />
+
+          <Route path="/api/admin/rekapitulasi_presensi" element={ <RekapitulasiPresensi/> } />
+          <Route path="/api/admin/rekapitulasi_presensi/create" element={ <AddRekapitulasiPresensi/> } />
+          <Route path="/api/admin/rekapitulasi_presensi/update/:id" element={ <EditRekapitulasiPresensi/> } />
 
         </Routes>
       </BrowserRouter>

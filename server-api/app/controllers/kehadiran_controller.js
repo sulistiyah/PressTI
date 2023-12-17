@@ -1,246 +1,67 @@
 const db = require("../models")
 const Kehadiran = db.kehadiran
 const SetPresensi = db.setPresensi
+const ProgramStudi = db .programStudi
+const Kelas = db.kelas
+const MataKuliah = db.matkul
 const UserMahasiswa = db.userMahasiswa
 const UserDosen = db.userDosen
 const Op = db.Sequelize.Op;
 
-//Proses Register Mahasiswa
-exports.register = (req, res) => {
-    if(!req.body.nim || !req.body.nama || !req.body.programStudiId || !req.body.kelasId || !req.body.noTelepon) {
-        res.status(400).send({
-            statusCode : 400,
-            message: "Kolom Tidak Boleh Kosong!"
-        });
-        return;
-    }
-
+//Proses Kehadiran Mahasiswa
+exports.presensi = (req, res) => {
     //Save User To Database
-    UserMahasiswa.create({
-        nim : req.body.nim,
-        nama : req.body.nama,
-        programStudiId : req.body.programStudiId,
-        kelasId : req.body.kelasId,
-        noTelepon : req.body.noTelepon,
-        password : bcrypt.hashSync(req.body.password, 8),
-        rePassword : bcrypt.hashSync(req.body.rePassword, 8 )
-    }, { 
-        include: ["programStudi", "kelas"] 
+    Kehadiran.create({
+        setPresensiId : req.body.setPresensiId,
+        userMahasiswaId : req.body.userMahasiswaId,
+        statusPresensi : req.body.statusPresensi,
+        tanggalPresensi : req.body.tanggalPresensi,
+        waktuPresensi : req.body.waktuPresensi
     })
     .then(data => {
-        if (!data) {
-            res.status(404).send({
-                statusCode : 404,
-                message: "Failed Register"
-            });
-        } else {
-        // Mencari program studi berdasarkan ID yang diberikan
-            ProgramStudi.findByPk(req.body.programStudiId)
-                .then(programStudi => {
-                if (!programStudi) {
-                    res.status(404).send({
-                        statusCode : 404,
-                        message: "Program Studi not found"
-                    });
-                } else {
-                    // Mencari kelas berdasarkan ID yang diberikan
-                    Kelas.findByPk(req.body.kelasId)
-                    .then(kelas => {
-                        if (!kelas) {
-                            res.status(404).send({
-                                statusCode : 404,
-                                message: "Kelas not found"
-                            });
-                        } else {
-                            res.status(200).send({
-                                statusCode : 200,
-                                message: "Registration Successful",
-                                data: {
-                                    id: data.id,
-                                    nim: data.nim,
-                                    nama: data.nama,
-                                    programStudi: {
-                                        id: programStudi.id,
-                                        kodeProdi: programStudi.kodeProdi,
-                                        programStudi: programStudi.programStudi,
-                                    },
-                                    kelas: {
-                                        id: kelas.id,
-                                        kodeKelas: kelas.kodeKelas,
-                                        kelas: kelas.kelas,
-                                    },                                
-                                    noTelepon: data.noTelepon,
-                                    password: data.password,
-                                    rePassword: data.rePassword,
-                                    // image: data.image,
-                                    // token: data.token
-                                    
-                                }
-                            });
-                        }
-                    })
-                    .catch(err => {
-                        res.status(500).send({
-                        statusCode : 500,
-                        message: err.message || "Some error occurred while retrieving Kelas."
-                        });
-                    });
-                }
-                })
-                .catch(err => {
-                    res.status(500).send({
-                        statusCode : 500,
-                        message: err.message || "Some error occurred while retrieving Program Studi."
-                    });
-                });
-        }
-    })
-    .catch(err => {
-        res.status(500).send({
-        statusCode : 500,
-        message: err.message || "Some error occurred while creating the User."
-        });
-    });
-}
-
-
-//Proses Login Mahasiswa
-exports.login = (req, res) => {
-    UserMahasiswa.findOne({
-        where : {
-            nim : req.body.nim
-        },
-        include : [
-            {
-                model : ProgramStudi,
-                as: "programStudi"
-            },
-            {
-                model : Kelas,
-                as : "kelas"
-            }            
-        ]    
-    })
-    .then(data => {
-        if(!data) {
-            return res.status(404).send({
-                statusCode : 404,
-                message : "User Not Found."
-            })
-        } 
-
-        const passwordIsValid = bcrypt.compareSync(
-            req.body.password,
-            data.password
-        )
-
-        if(!passwordIsValid) {
-            return res.status(401).send({
-                statusCode : 401,
-                accessToken : null,
-                message: "Invalid Password"
-            })
-        }
-
-        const token = jwt.sign(
-            { id: data.id },
-            auth_config.secret,
-            {
-                algorithm: 'HS256',
-                allowInsecureKeySizes: true,
-              expiresIn: 86400, // 24 hours
-            }
-        );
-
-        // UserMahasiswa.create({
-        //     token : token
-        // })
-
-        // data.token = token
-        // data.save()
-
         res.status(200).send({
-            statusCode : 200,
-            message: "Login Successful",
-            data: {
-                id: data.id,
-                nim: data.nim,
-                nama: data.nama,
-                programStudi: {
-                    id : data.programStudi.id,
-                    kodeProdi : data.programStudi.kodeProdi,
-                    programStudi : data.programStudi.programStudi
-                },
-                kelas: {
-                    id : data.kelas.id,
-                    kodeKelas : data.kelas.kodeKelas,
-                    kelas : data.kelas.kelas
-                },                          
-                noTelepon: data.noTelepon,
-                accessToken : token
-                
-            }
-        });       
+            statusCode: 200,
+            message: "Presensi Successful",
+            data : data
+        });
     })
     .catch(err => {
         res.status(500).send({
-            statusCode : 500,
-            message: err.message || "Some error occurred while login the User."
+            statusCode: 500,
+            message: err.message || "Some error occurred while creating the presensi."
         });
     });
 }
-
 
 //Proses Get Data Mahasiswa - GET My Profile
-exports.findAllMyProfile = (req, res) => {
+exports.findAllKehadiran = (req, res) => {
     const id = req.query.id
     const condition = id? { id : { [Op.like]: `%${id}%` } } : null
 
-    UserMahasiswa.findAll({
+    Kehadiran.findAll({
         where : condition,
         include : [
             {
-                model : ProgramStudi,
-                as: "programStudi"
+                model : SetPresensi,
+                as: "setPresensi"
             },
             {
-                model : Kelas,
-                as : "kelas"
+                model : UserMahasiswa,
+                as : "userMahasiswa"
             }]    
         })
         .then(data => {
-            const formattedData = data.map(mahasiswa => ({
-                id: mahasiswa.id,
-                nim: mahasiswa.nim,
-                nama: mahasiswa.nama,
-                programStudi: {
-                    id: mahasiswa.programStudi.id,
-                    kodeProdi: mahasiswa.programStudi.kodeProdi,
-                    programStudi: mahasiswa.programStudi.programStudi
-                },
-                kelas: {
-                    id: mahasiswa.kelas.id,
-                    kodeKelas: mahasiswa.kelas.kodeKelas,
-                    kelas: mahasiswa.kelas.kelas
-                },
-                noTelepon: mahasiswa.noTelepon,
-                image: mahasiswa.image
-            }));
-        
             res.status(200).send({
-                statusCode : 200,
-                message: "Succes Get Data Mahasiswa",
-                data: formattedData
+                statusCode: 200,
+                data
             });
-            
         })
-        .catch( err => {
-            console.log(err)
+        .catch(err => {
             res.status(500).send({
-                statusCode : 500,
-                message: "Failed Get Data Mahasiswa"
-            })
-        })
+                statusCode: 500,
+                message: err.message || "Some error occurred while retrieving data kehadiran."
+            });
+        });
 }
 
 

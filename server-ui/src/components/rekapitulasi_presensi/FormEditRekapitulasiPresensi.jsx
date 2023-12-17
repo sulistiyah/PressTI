@@ -2,26 +2,31 @@ import React, {useState, useEffect} from 'react'
 import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 
-function FormEditKelas() {
-    const [kodeKelas, setKodeKelas] = useState('')
-    const [kelas, setKelas] = useState('')
+function FormEditRekapitulasiPresensi() {
+    const [nim, setNim] = useState('')
+    const [nama, setNama] = useState('')
     const [programStudi, setProgramStudi] = useState('')
     const [programStudiList, setProgramStudiList] = useState([])
+    const [kelas, setKelas] = useState('')
+    const [kelasList, setKelasList] = useState([])
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
     const {id} = useParams()
 
     useEffect(() => {
-        const getKelasId = async() => {
+        const getMataKuliahId = async() => {
             try {
-                const response = await axios.get(`http://34.192.213.125:8080/api/admin/kelas/${id}`)
-                setKodeKelas(response.data.data.kodeKelas)
-                setKelas(response.data.data.kelas)
+                const response = await axios.get(`http://34.203.73.249:8080/api/admin/mata_kuliah/${id}`)
+                setKodeMatkul(response.data.data.kodeMatkul)
+                setMataKuliah(response.data.data.mataKuliah)
+                
+                const getProgramStudi = await axios.get('http://34.203.73.249:8080/api/admin/program_studi')
+                setProgramStudiList(getProgramStudi.data.data)
                 setProgramStudi(response.data.data.programStudi)
 
-                const getProgramStudi = await axios.get('http://34.192.213.125:8080/api/admin/program_studi')
-                setProgramStudiList(getProgramStudi.data.data)
-
+                const getKelas = await axios.get('http://34.203.73.249:8080/api/admin/kelas')
+                setKelasList(getKelas.data.data)
+                setKelas(response.data.data.kelas)
             }catch (error) {
                 if(error.response) {
                     console.log(error.response.data.message)
@@ -29,26 +34,28 @@ function FormEditKelas() {
                 }
             }
         }
-        getKelasId()
+        getMataKuliahId()
     }, [id])
 
-    const updateKelas = async(e) => {
+    const updateMataKuliah = async(e) => {
         e.preventDefault()
         try {
-            await axios.put(`http://34.203.73.249:8080/api/admin/kelas/update/${id}`, {
-                kodeKelas : kodeKelas,
-                kelas : kelas,
-                programStudiId : programStudi
+            await axios.put(`http://34.203.73.249:8080/api/admin/mata_Kuliah/update/${id}`, {
+                kodeMatkul : kodeMatkul,
+                mataKuliah : mataKuliah,
+                programStudiId : programStudi,
+                kelasId : kelas
                 
             })
             
-            navigate("/api/admin/kelas")
+            navigate("/api/admin/mata_kuliah")
             console.log({
-                kodeKelas : kodeKelas,
-                kelas : kelas,
-                programStudiId : programStudi
+                kodeMatkul : kodeMatkul,
+                mataKuliah : mataKuliah,
+                programStudiId : programStudi,
+                kelasId : kelas
             });
-        }catch (error) {
+        }catch (error) { 
             if(error.response) {
                 console.log(error.response.data.message)
                 setMessage(error.response.data.message)
@@ -69,34 +76,34 @@ function FormEditKelas() {
 
     return (
         <div>
-            <h1 className='title'>Kelas</h1>
-            <h2 className='subtitle'>Update Kelas</h2>
+            <h1 className='title'>Mata Kuliah</h1>
+            <h2 className='subtitle'>Update Mata Kuliah</h2>
             <div className='card is-shadowless'>
                 <div className='card-content'>
                     <div className='content'>
-                        <form onSubmit={updateKelas}>
+                        <form onSubmit={updateMataKuliah}>
                             <p className='has-text-centered'>{message}</p>
                             <div className='field'>
-                                <label className='label'>Kode Kelas</label>
+                                <label className='label'>Kode Mata Kuliah</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={kodeKelas}
-                                        onChange={(e) => setKodeKelas(e.target.value)}
-                                        placeholder='Kode Kelas'
+                                        value={kodeMatkul}
+                                        onChange={(e) => setKodeMatkul(e.target.value)}
+                                        placeholder='Kode Mata Kuliah'
                                         style={inputStyle}/>
                                 </div>
                             </div>
                             <div className='field'>
-                                <label className='label'>Kelas</label>
+                                <label className='label'>Mata Kuliah</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={kelas}
-                                        onChange={(e) => setKelas(e.target.value)}
-                                        placeholder='Kelas'
+                                        value={mataKuliah}
+                                        onChange={(e) => setMataKuliah(e.target.value)}
+                                        placeholder='Mata Kuliah'
                                         style={inputStyle}/>
                                 </div>
                             </div>
@@ -118,6 +125,23 @@ function FormEditKelas() {
                                 </div>
                             </div>
                             <div className='field'>
+                                <label className='label'>Kelas</label>
+                                <div className='control'>
+                                    <select
+                                        className='select'
+                                        value={kelas}
+                                        onChange={(e) => setKelas(e.target.value)}
+                                        style={inputStyle}>
+                                        <option value=''>Pilih Kelas</option>
+                                            {kelasList.map((kelas) => (
+                                                <option key={kelas.id} value={kelas.id}>
+                                                    {kelas.kelas}
+                                                </option>
+                                            ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className='field'>
                                 <div className='control'>
                                     <button type='submit' className="button is-success" >
                                         Update
@@ -132,4 +156,4 @@ function FormEditKelas() {
     )
 }
 
-export default FormEditKelas
+export default FormEditRekapitulasiPresensi

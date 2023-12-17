@@ -2,15 +2,16 @@ import React ,{useState, useEffect} from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
 
-function FormAddKelas() {
+function FormAddRekapitulasiPresensi() {
 
-    const [kodeKelas, setKodeKelas] = useState('')
-    const [kelas, setKelas] = useState('')
+    const [kodeMatkul, setKodeMatkul] = useState('')
+    const [mataKuliah, setMataKuliah] = useState('')
     const [programStudiId, setProgramStudiId] = useState('')
     const [programStudiList, setProgramStudiList] = useState([]);
+    const [kelasId, setKelasId] = useState('')
+    const [kelasList, setKelasList] = useState([]);
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
-
 
     useEffect(() => {
         const fetchData = async () => {
@@ -18,7 +19,10 @@ function FormAddKelas() {
                 // Fetch data for Program Studi
                 const responseProgramStudi = await axios.get('http://34.203.73.249:8080/api/admin/program_studi');
                 setProgramStudiList(responseProgramStudi.data.data);
-
+    
+                // Fetch data for Kelas
+                const responseKelas = await axios.get('http://34.203.73.249:8080/api/admin/rekapi');
+                setKelasList(responseKelas.data.data);
             } catch (error) {
                 if (error.response) {
                     console.log(error.response.data.message);
@@ -26,26 +30,26 @@ function FormAddKelas() {
                 }
             }
         };
-
+    
         fetchData();
-
     }, []);
 
-    const saveKelas = async(e) => {
+    const saveMataKuliah = async(e) => {
         e.preventDefault()
         try {
-            await axios.post('http://34.203.73.249:8080/api/admin/kelas/create', {
-                kodeKelas : kodeKelas,
-                kelas : kelas,
-                programStudiId : programStudiId
-                
+            await axios.post('http://34.203.73.249:8080/api/admin/rekapitulasi_presensi/create', {
+                kodeMatkul : kodeMatkul,
+                mataKuliah : mataKuliah,
+                programStudiId : programStudiId,
+                kelasId : kelasId
             })
             
-            navigate("/api/admin/kelas")
+            navigate("/api/admin/mata_kuliah")
             console.log({
-                kodeKelas : kodeKelas,
-                kelas : kelas,
-                programStudiId : programStudiId
+                kodeMatkul : kodeMatkul,
+                mataKuliah : mataKuliah,
+                programStudiId : programStudiId,
+                kelasId : kelasId
             });
         }catch (error) {
             if(error.response) {
@@ -68,34 +72,34 @@ function FormAddKelas() {
 
     return (
         <div>
-            <h1 className='title'>Kelas</h1>
-            <h2 className='subtitle'>Create Kelas</h2>
+            <h1 className='title'>Mata Kuliah</h1>
+            <h2 className='subtitle'>Create Mata Kuliah</h2>
             <div className='card is-shadowless'>
                 <div className='card-content'>
                     <div className='content'>
-                        <form onSubmit={saveKelas}>
+                        <form onSubmit={saveMataKuliah}>
                             <p className='has-text-centered'>{message}</p>
                             <div className='field'>
-                                <label className='label'>Kode Kelas</label>
+                                <label className='label'>Kode Mata Kuliah</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={kodeKelas}
-                                        onChange={(e) => setKodeKelas(e.target.value)}
-                                        placeholder='Kode Kelas'
+                                        value={kodeMatkul}
+                                        onChange={(e) => setKodeMatkul(e.target.value)}
+                                        placeholder='Kode Mata Kuliah'
                                         style={inputStyle}/>
                                 </div>
                             </div>
                             <div className='field'>
-                                <label className='label'>Kelas</label>
+                                <label className='label'>Mata Kuliah</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={kelas}
-                                        onChange={(e) => setKelas(e.target.value)}
-                                        placeholder='Kelas'
+                                        value={mataKuliah}
+                                        onChange={(e) => setMataKuliah(e.target.value)}
+                                        placeholder='Mata Kuliah'
                                         style={inputStyle}/>
                                 </div>
                             </div>
@@ -117,6 +121,23 @@ function FormAddKelas() {
                                 </div>
                             </div>    
                             <div className='field'>
+                                <label className='label'>Kelas</label>
+                                <div className='control'>
+                                    <select
+                                        className='select'
+                                        value={kelasId}
+                                        onChange={(e) => setKelasId(e.target.value)}
+                                        style={inputStyle}                                    >
+                                        <option value=''>Pilih Kelas</option>
+                                        {kelasList.map((kelas) => (
+                                        <option key={kelas.id} value={kelas.id}>
+                                            {kelas.kelas}
+                                        </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className='field'>
                                 <div className='control'>
                                     <button type='submit' className="button is-success" >
                                         Save
@@ -131,4 +152,4 @@ function FormAddKelas() {
     )
 }
 
-export default FormAddKelas
+export default FormAddRekapitulasiPresensi
