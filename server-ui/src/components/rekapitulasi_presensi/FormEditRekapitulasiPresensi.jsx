@@ -3,30 +3,35 @@ import axios from 'axios'
 import { useNavigate, useParams } from 'react-router-dom'
 
 function FormEditRekapitulasiPresensi() {
-    const [nim, setNim] = useState('')
-    const [nama, setNama] = useState('')
-    const [programStudi, setProgramStudi] = useState('')
-    const [programStudiList, setProgramStudiList] = useState([])
-    const [kelas, setKelas] = useState('')
-    const [kelasList, setKelasList] = useState([])
+    const [statusPresensi, setStatusPresensi] = useState('')
+    const [tanggalPresensi, setTanggalPresensi] = useState('')
+    const [waktuPresensi, setwaktuPresensi] = useState('')
+    const [setPresensi, setSetPresensi] = useState('')
+    const [setPresensiList, setSetPresensiList] = useState([]);
+    const [userMahasiswa, setUserMahasiswa] = useState('')
+    const [userMahasiswaList, setUserMahasiswaList] = useState([]);
     const [message, setMessage] = useState('')
     const navigate = useNavigate()
     const {id} = useParams()
 
     useEffect(() => {
-        const getMataKuliahId = async() => {
+        const getRekapitulasiPresensiId = async() => {
             try {
-                const response = await axios.get(`http://34.203.73.249:8080/api/admin/mata_kuliah/${id}`)
-                setKodeMatkul(response.data.data.kodeMatkul)
-                setMataKuliah(response.data.data.mataKuliah)
+                const response = await axios.get(`http://34.203.73.249:8080/api/admin/rekapitulasi_presensi/${id}`)
+                setStatusPresensi(response.data.data.statusPresensi)
+                setTanggalPresensi(response.data.data.tanggalPresensi)
+                setwaktuPresensi(response.data.data.waktuPresensi)
                 
-                const getProgramStudi = await axios.get('http://34.203.73.249:8080/api/admin/program_studi')
-                setProgramStudiList(getProgramStudi.data.data)
-                setProgramStudi(response.data.data.programStudi)
+                const getSetPresensi = await axios.get('http://34.203.73.249:8080/api/admin/set_presensi')
+                setPresensiList(getSetPresensi.data.data)
+                setPresensi(getSetPresensi.data.data.programStudi)
+                setPresensi(getSetPresensi.data.data.kelas)
+                setPresensi(getSetPresensi.data.data.mataKuliah)
 
-                const getKelas = await axios.get('http://34.203.73.249:8080/api/admin/kelas')
-                setKelasList(getKelas.data.data)
-                setKelas(response.data.data.kelas)
+                const getUserMahasiswa = await axios.get('http://34.203.73.249:8080/api/admin/user_mahasiswa')
+                setUserMahasiswaList(getUserMahasiswa.data.data)
+                setUserMahasiswa(getUserMahasiswa.data.data.nama)
+                setUserMahasiswa(getUserMahasiswa.data.data.nim)
             }catch (error) {
                 if(error.response) {
                     console.log(error.response.data.message)
@@ -34,26 +39,28 @@ function FormEditRekapitulasiPresensi() {
                 }
             }
         }
-        getMataKuliahId()
+        getRekapitulasiPresensiId()
     }, [id])
 
-    const updateMataKuliah = async(e) => {
+    const updateRekapitulasiPresensi = async(e) => {
         e.preventDefault()
         try {
-            await axios.put(`http://34.203.73.249:8080/api/admin/mata_Kuliah/update/${id}`, {
-                kodeMatkul : kodeMatkul,
-                mataKuliah : mataKuliah,
-                programStudiId : programStudi,
-                kelasId : kelas
+            await axios.put(`http://34.203.73.249:8080/api/admin/rekaitulasi_presensi/update/${id}`, {
+                statusPresensi : statusPresensi,
+                tanggalPresensi : tanggalPresensi,
+                waktuPresensi : waktuPresensi,
+                setPresensiId : setPresensi,
+                userMahasiswaId : userMahasiswa
                 
             })
             
-            navigate("/api/admin/mata_kuliah")
+            navigate("/api/admin/rekapitulasi_presensi")
             console.log({
-                kodeMatkul : kodeMatkul,
-                mataKuliah : mataKuliah,
-                programStudiId : programStudi,
-                kelasId : kelas
+                statusPresensi : statusPresensi,
+                tanggalPresensi : tanggalPresensi,
+                waktuPresensi : waktuPresensi,
+                setPresensiId : setPresensi,
+                userMahasiswaId : userMahasiswa
             });
         }catch (error) { 
             if(error.response) {
@@ -76,71 +83,81 @@ function FormEditRekapitulasiPresensi() {
 
     return (
         <div>
-            <h1 className='title'>Mata Kuliah</h1>
-            <h2 className='subtitle'>Update Mata Kuliah</h2>
+            <h1 className='title'>Rekapitulasi Presensi</h1>
+            <h2 className='subtitle'>Update Rekapitulasi Presensi</h2>
             <div className='card is-shadowless'>
                 <div className='card-content'>
                     <div className='content'>
-                        <form onSubmit={updateMataKuliah}>
+                        <form onSubmit={updateRekapitulasiPresensi}>
                             <p className='has-text-centered'>{message}</p>
                             <div className='field'>
-                                <label className='label'>Kode Mata Kuliah</label>
+                                <label className='label'>Status Presensi</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={kodeMatkul}
-                                        onChange={(e) => setKodeMatkul(e.target.value)}
-                                        placeholder='Kode Mata Kuliah'
+                                        value={statusPresensi}
+                                        onChange={(e) => setStatusPresensi(e.target.value)}
+                                        placeholder='Status Presensi'
                                         style={inputStyle}/>
                                 </div>
                             </div>
                             <div className='field'>
-                                <label className='label'>Mata Kuliah</label>
+                                <label className='label'>Tanggal Presensi</label>
                                 <div className='control'>
                                         <input 
                                         type='text' 
                                         className='input' 
-                                        value={mataKuliah}
-                                        onChange={(e) => setMataKuliah(e.target.value)}
-                                        placeholder='Mata Kuliah'
+                                        value={tanggalPresensi}
+                                        onChange={(e) => setTanggalPresensi(e.target.value)}
+                                        placeholder='Tanggal Presensi'
                                         style={inputStyle}/>
                                 </div>
                             </div>
                             <div className='field'>
-                                <label className='label'>Program Studi</label>
+                                <label className='label'>Waktu Presensi</label>
                                 <div className='control'>
-                                    <select
-                                        className='select'
-                                        value={programStudi}
-                                        onChange={(e) => setProgramStudi(e.target.value)}
-                                        style={inputStyle}>                                        
-                                        <option value=''>Pilih Program Studi</option>
-                                            {programStudiList.map((prodi) => (
-                                                <option key={prodi.id} value={prodi.id}>
-                                                    {prodi.programStudi}
-                                                </option>
-                                            ))}
-                                    </select>
+                                        <input 
+                                        type='text' 
+                                        className='input' 
+                                        value={waktuPresensi}
+                                        onChange={(e) => setwaktuPresensi(e.target.value)}
+                                        placeholder='Waktu Presensi'
+                                        style={inputStyle}/>
                                 </div>
                             </div>
                             <div className='field'>
-                                <label className='label'>Kelas</label>
+                                <label className='label'>Set Presensi</label>
                                 <div className='control'>
                                     <select
                                         className='select'
-                                        value={kelas}
-                                        onChange={(e) => setKelas(e.target.value)}
+                                        value={setPresensi}
+                                        onChange={(e) => setSetPresensi(e.target.value)}
                                         style={inputStyle}>
-                                        <option value=''>Pilih Kelas</option>
-                                            {kelasList.map((kelas) => (
-                                                <option key={kelas.id} value={kelas.id}>
-                                                    {kelas.kelas}
-                                                </option>
-                                            ))}
+                                        {setPresensiList.map((presensi) => (
+                                        <option key={presensi.id} value={presensi.id}>
+                                            {presensi.programStudi + ' - ' + presensi.kelas + ' - ' + presensi.mataKuliah}
+                                        </option>
+                                        ))}
                                     </select>
                                 </div>
-                            </div>
+                            </div>    
+                            <div className='field'>
+                                <label className='label'>User Mahasiswa</label>
+                                <div className='control'>
+                                    <select
+                                        className='select'
+                                        value={userMahasiswa}
+                                        onChange={(e) => setUserMahasiswa(e.target.value)}
+                                        style={inputStyle}>
+                                        {userMahasiswaList.map((user) => (
+                                        <option key={user.id} value={user.id}>
+                                            {user.nim + ' - ' + user.nama}
+                                        </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>    
                             <div className='field'>
                                 <div className='control'>
                                     <button type='submit' className="button is-success" >
